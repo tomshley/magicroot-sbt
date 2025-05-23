@@ -1,0 +1,42 @@
+/*
+ * Copyright 2023 Tomshley LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @author Thomas Schena @sgoggles <https://github.com/sgoggles> | <https://gitlab.com/sgoggles>
+ */
+
+package com.tomshley.magicroot.sbt.common
+
+import sbt.{File, Project, file}
+
+protected[magicroot] trait SbtProjectHelper {
+  val projectName: String
+  val projectBaseOption: Option[File]
+
+  /*
+   * Example usage:
+   * private def getProjectType[T : WeakTypeTag] = weakTypeOf[T] match {
+   *
+   *   case t if t =:= weakTypeOf[String] => "String matched"
+   *   case t if t <:< weakTypeOf[HexagonalPart] => "Some other type matched"
+   * }
+   */
+
+  lazy val sbtProject: Project = {
+    Project(
+      id = projectName,
+      base = projectBaseOption.fold(ifEmpty = file(projectName))(projectFile => projectBaseOption.get)
+    )
+  }
+}

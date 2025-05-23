@@ -1,0 +1,41 @@
+/*
+ * copyright 2023 tomshley llc
+ *
+ * licensed under the apache license, version 2.0 (the "license");
+ * you may not use this file except in compliance with the license.
+ * you may obtain a copy of the license at
+ *
+ * http://www.apache.org/licenses/license-2.0
+ *
+ * unless required by applicable law or agreed to in writing, software
+ * distributed under the license is distributed on an "as is" basis,
+ * without warranties or conditions of any kind, either express or implied.
+ * see the license for the specific language governing permissions and
+ * limitations under the license.
+ *
+ * @author thomas schena @sgoggles <https://github.com/sgoggles> | <https://gitlab.com/sgoggles>
+ *
+ */
+
+package com.tomshley.magicroot.sbt.projectsettings.keys
+
+import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
+import com.tomshley.magicroot.sbt.projectsettings.settings.ProjectSettingsDefs
+import sbt.Keys.{licenses, scalacOptions, version}
+import sbt.url
+
+protected[projectsettings] trait CommonProjectKeys extends BasicSbtSettingsKeys {
+  lazy val baseSettings3: sbt.Def.SettingsDefinition = Seq(
+    licenses := {
+      val tagOrBranch =
+        if (version.value.endsWith("SNAPSHOT")) "main"
+        else "v" + version.value
+      Seq(
+        ("APACHE-2.0",
+          url("https://raw.githubusercontent.com/tomshley/magicroot-plugins-sbt/" + tagOrBranch + "/LICENSE"))
+      )
+    },
+    scalacOptions += "-Wconf:cat=deprecation&msg=.*JavaConverters.*:s"
+  ) ++ ProjectSettingsDefs.scala3Settings
+
+}
