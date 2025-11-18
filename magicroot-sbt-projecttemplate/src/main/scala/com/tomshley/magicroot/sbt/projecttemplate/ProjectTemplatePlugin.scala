@@ -59,7 +59,7 @@ object ProjectTemplatePlugin extends AutoPlugin {
       .filterNot { s =>
         s.targetFile.exists()
       }
-      .foreach(t => {
+      .foreach { t =>
 
         Using(
           scala.io.Source.createBufferedSource(t.unmanagedResourceURL.openStream())
@@ -70,6 +70,6 @@ object ProjectTemplatePlugin extends AutoPlugin {
             }
           }
         }
-      })
+      }
   }
 }
