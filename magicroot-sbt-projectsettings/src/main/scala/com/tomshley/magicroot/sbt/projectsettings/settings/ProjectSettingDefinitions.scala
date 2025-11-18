@@ -18,14 +18,16 @@
 
 package com.tomshley.magicroot.sbt.projectsettings.settings
 
-import com.tomshley.magicroot.sbt.projectsettings.vendor.{AkkaProjectSettings, PekkoProjectSettings}
-import com.typesafe.sbt.packager.Keys.{dockerBaseImage, dockerExposedPorts, dockerUpdateLatest}
+import com.tomshley.magicroot.sbt.projectsettings.vendor.{
+  AkkaProjectSettings,
+  PekkoProjectSettings,
+}
+import com.typesafe.sbt.packager.Keys.{ dockerBaseImage, dockerExposedPorts, dockerUpdateLatest }
 import com.typesafe.sbt.packager.docker.DockerChmodType
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.dockerAdditionalPermissions
 import sbt.Keys.*
-import sbt.{Def, *}
+import sbt.{ Def, * }
 import sbtdynver.DynVerPlugin.autoImport.dynverSeparator
-
 
 sealed trait ProjectSettingsVersions {
   lazy val jetbrainsAnnotationsVersion = "24.0.1"
@@ -45,41 +47,44 @@ sealed trait ProjectSettingsVersions {
   val ScalaVersions: Seq[String] = Scala2Versions :+ Scala3
 }
 protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVersions {
-  lazy val globalRunSettings: Seq[Def.Setting[? >: Boolean & Task[Seq[String]] & ClassLoaderLayeringStrategy]] = Seq(
+  lazy val globalRunSettings
+    : Seq[Def.Setting[? >: Boolean & Task[Seq[String]] & ClassLoaderLayeringStrategy]] = Seq(
     Global / cancelable := false, // ctrl-c
     scalacOptions := Seq(
       "-feature",
       "-unchecked",
       "-deprecation",
       "-encoding",
-      "utf8"
+      "utf8",
     ),
-    classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars
+    classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.AllLibraryJars,
   )
 
-  lazy val dockerPublishProject: Seq[Def.Setting[? >: String & Task[Seq[(DockerChmodType, String)]] & Seq[Int] & Boolean]] = Seq(
-    ThisBuild / dynverSeparator := "-",
-    dockerBaseImage := "registry.gitlab.com/tomshley/brands/global/tware/tech/products/provisioning/microcontainer-lib-docker/runtime_java_jre21:v0.0.1",
-    dockerAdditionalPermissions += (DockerChmodType.UserGroupWriteExecute, "/opt/docker"),
-    dockerExposedPorts := Seq(7626, 7355, 17355),
-    dockerUpdateLatest := true
-  )
+  lazy val dockerPublishProject
+    : Seq[Def.Setting[? >: String & Task[Seq[(DockerChmodType, String)]] & Seq[Int] & Boolean]] =
+    Seq(
+      ThisBuild / dynverSeparator := "-",
+      dockerBaseImage := "registry.gitlab.com/tomshley/brands/global/tware/tech/products/provisioning/microcontainer-lib-docker/runtime_java_jre21:v0.0.1",
+      dockerAdditionalPermissions += (DockerChmodType.UserGroupWriteExecute, "/opt/docker"),
+      dockerExposedPorts := Seq(7626, 7355, 17355),
+      dockerUpdateLatest := true,
+    )
 
   lazy val scala213Settings: Seq[Def.Setting[? >: Seq[String] & String <: Object]] = Seq(
     crossScalaVersions := Scala2Versions,
-    scalaVersion := Scala213
+    scalaVersion := Scala213,
   )
 
   lazy val scala3Settings: Seq[Def.Setting[? >: Seq[String] & String <: Object]] = Seq(
     crossScalaVersions := ScalaVersions,
-    scalaVersion := Scala3
+    scalaVersion := Scala3,
   )
 
   lazy val magicrootProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= Seq(
-/* UNDER CONSTRUCTION */
+      /* UNDER CONSTRUCTION */
 //        "com.tomshley.magicroot.lib" % "magicroot-lib_3" % "0.1.0-SNAPSHOT"
-      )
+    )
   )
 
   lazy val akkaProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
@@ -92,52 +97,56 @@ protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVer
     libraryDependencies ++= AkkaProjectSettings.Libraries.akkaActorProjectSettings
   )
 
-  lazy val pekkoProject: Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
+  lazy val pekkoProject: Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] =
+    Seq(
+      resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers,
+      libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoActorLibraries,
+    )
+  lazy val pekkoPersistenceProject
+    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
     resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers,
-    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoActorLibraries
+    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoPersistenceLibraries,
   )
-  lazy val pekkoPersistenceProject: Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
+  lazy val pekkoProjectionProject
+    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
     resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers,
-    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoPersistenceLibraries
+    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoProjectionLibraries,
   )
-  lazy val pekkoProjectionProject: Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers,
-    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoProjectionLibraries
-  )
-  lazy val pekkoKafkaProject: Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
+  lazy val pekkoKafkaProject
+    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
     resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers ++ PekkoProjectSettings.Resolvers.pekkoKafkaResolvers,
-    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoKafkaLibraries
+    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoKafkaLibraries,
   )
 
   lazy val jsonProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= Seq(
-        "org.json4s" %% "json4s-native" % json4sVersion,
-        "org.json4s" %% "json4s-jackson" % json4sVersion
-      )
+      "org.json4s" %% "json4s-native" % json4sVersion,
+      "org.json4s" %% "json4s-jackson" % json4sVersion,
+    )
   )
 
   lazy val javaProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= Seq(
-        "org.apache.commons" % "commons-digester3" % apacheCommonsDigester,
-        "commons-io" % "commons-io" % apacheCommonsIOVersion,
-        "org.slf4j" % "slf4j-api" % slf4jVersion,
-        "org.slf4j" % "slf4j-simple" % slf4jVersion,
-        "org.jetbrains" % "annotations" % jetbrainsAnnotationsVersion,
-        "org.apache.commons" % "commons-lang3" % apacheCommonsLang3Version,
-        "joda-time" % "joda-time" % jodaTimeVersion,
-        "com.google.guava" % "guava" % googleGuavaVersion,
-        "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion
-      )
+      "org.apache.commons" % "commons-digester3" % apacheCommonsDigester,
+      "commons-io" % "commons-io" % apacheCommonsIOVersion,
+      "org.slf4j" % "slf4j-api" % slf4jVersion,
+      "org.slf4j" % "slf4j-simple" % slf4jVersion,
+      "org.jetbrains" % "annotations" % jetbrainsAnnotationsVersion,
+      "org.apache.commons" % "commons-lang3" % apacheCommonsLang3Version,
+      "joda-time" % "joda-time" % jodaTimeVersion,
+      "com.google.guava" % "guava" % googleGuavaVersion,
+      "com.fasterxml.jackson.core" % "jackson-databind" % jacksonVersion,
+    )
   )
   lazy val libProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= Seq(
-        "com.github.nscala-time" %% "nscala-time" % "2.32.0",
-        "com.typesafe" % "config" % "1.4.2",
-        "org.scalatest" %% "scalatest" % scalaTestVersion % Test
-      )
+      "com.github.nscala-time" %% "nscala-time" % "2.32.0",
+      "com.typesafe" % "config" % "1.4.2",
+      "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+    )
   )
   lazy val unmanagedProject: Seq[Def.Setting[?]] = Seq(
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
-    Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources"
+    Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
   )
 }

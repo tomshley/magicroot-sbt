@@ -19,23 +19,27 @@
 package com.tomshley.magicroot.sbt.common
 
 import com.tomshley.magicroot.common.model.ResourceTypes
-import sbt.{File, file}
+import sbt.{ file, File }
 
 import java.net.URL
-case class UnmanagedResource(unmanagedName: String,
-                             targetName: String,
-                             buildBaseDirectory: File,
-                             unmanagedResourceTypeOption: Option[ResourceTypes.EnumType] = None) {
+case class UnmanagedResource(
+  unmanagedName: String,
+  targetName: String,
+  buildBaseDirectory: File,
+  unmanagedResourceTypeOption: Option[ResourceTypes.EnumType] = None,
+) {
 
-  lazy val targetFile: File = {
+  lazy val targetFile: File =
     file(Seq(buildBaseDirectory, targetName).mkString("/"))
-  }
 
   lazy val unmanagedResourceURL: URL = getClass.getClassLoader.getResource(
     unmanagedName
   )
 
-  lazy val fileExtension:String = {
-    unmanagedResourceTypeOption.fold(ifEmpty = ResourceTypes.Untyped)(unmanagedResourceType => unmanagedResourceTypeOption.get).toString
-  }
+  lazy val fileExtension: String =
+    unmanagedResourceTypeOption
+      .fold(ifEmpty = ResourceTypes.Untyped)(unmanagedResourceType =>
+        unmanagedResourceTypeOption.get
+      )
+      .toString
 }

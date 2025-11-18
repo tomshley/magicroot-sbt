@@ -25,11 +25,15 @@ import sbt.*
 
 protected[projectsettings] trait ProjectTypeKeys extends BasicSbtSettingsKeys {
 
-  def internalProject(projectName: String, projectBaseOption: Option[File] = None): Project = {
-    ProjectSbtSettingsModel(projectName = projectName, projectBaseOption = projectBaseOption).sbtProject
-  }
+  def internalProject(projectName: String, projectBaseOption: Option[File] = None): Project =
+    ProjectSbtSettingsModel(
+      projectName = projectName,
+      projectBaseOption = projectBaseOption,
+    ).sbtProject
 
-  def publishableProject(projectName: String, projectBaseOption: Option[File] = None): Project = {
-    ProjectSbtSettingsModel(projectName = projectName, projectBaseOption = projectBaseOption).sbtProject
-  }
+  def publishableProject(projectName: String, projectBaseOption: Option[File] = None): Project =
+    ProjectSbtSettingsModel(
+      projectName = projectName,
+      projectBaseOption = projectBaseOption,
+    ).sbtProject
 }
