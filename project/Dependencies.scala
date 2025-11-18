@@ -12,31 +12,7 @@ object Dependencies {
     libraryDependencies ++= Seq(
         )
   )
-  val acceptancePluginProject: Seq[Def.Setting[?]] = Seq(
-    libraryDependencies ++= Seq(
-        )
-  )
-  val cicdPluginProject: Seq[Def.Setting[?]] = Seq(
-    libraryDependencies ++= Seq(
-        )
-  )
-  val layeredPluginProject: Seq[Def.Setting[?]] = Seq(
-    libraryDependencies ++= Seq(
-        )
-  )
-  val libraryPluginProject: Seq[Def.Setting[?]] = Seq(
-    libraryDependencies ++= Seq(
-        )
-  )
-  val protobufsPluginProject: Seq[Def.Setting[?]] = Seq(
-    libraryDependencies ++= Seq(
-        )
-  )
   val settingsPluginProject: Seq[Def.Setting[?]] = Seq(
-    libraryDependencies ++= Seq(
-        )
-  )
-  val structuredPluginProject: Seq[Def.Setting[?]] = Seq(
     libraryDependencies ++= Seq(
         )
   )
