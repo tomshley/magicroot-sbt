@@ -19,7 +19,15 @@
 package com.tomshley.magicroot.sbt
 package projectsettings
 
-import com.tomshley.magicroot.sbt.projectsettings.keys.{CommonProjectKeys, ForkJVMRunConfigKeys, ProjectTypeKeys, PublishGitLabPluginKeys, SecureFilesPluginKeys, VersionFilePluginKeys, WebPluginKeys}
+import com.tomshley.magicroot.sbt.projectsettings.keys.{
+  CommonProjectKeys,
+  ForkJVMRunConfigKeys,
+  ProjectTypeKeys,
+  PublishGitLabPluginKeys,
+  SecureFilesPluginKeys,
+  VersionFilePluginKeys,
+  WebPluginKeys,
+}
 import com.tomshley.magicroot.sbt.projectsettings.settings.ProjectSettingsDefs
 import com.typesafe.sbt.packager.Keys.dockerAliases
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
@@ -28,7 +36,7 @@ import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.Docker
 import com.typesafe.sbt.web.SbtWeb
 import org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
 import play.twirl.sbt.SbtTwirl
-import sbt.Keys.{baseDirectory, publish, publishLocal, streams}
+import sbt.Keys.{ baseDirectory, publish, publishLocal, streams }
 import sbt.*
 
 import scala.sys.process.Process
@@ -43,9 +51,8 @@ protected[this] object BaseProjectSettingsPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override def projectSettings: Seq[Def.Setting[?]] = {
+  override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ baseSettings3
-  }
 }
 
 object ProjectsHelperPlugin extends AutoPlugin {
@@ -65,9 +72,8 @@ object ForkJVMRunConfigPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override def projectSettings: Seq[Def.Setting[?]] = {
+  override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ forkJVMRunConfigSettings
-  }
 }
 
 object VersionFilePlugin extends AutoPlugin {
@@ -79,9 +85,8 @@ object VersionFilePlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override def projectSettings: Seq[Def.Setting[?]] = {
+  override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ versionFileSettings
-  }
 }
 
 object SecureFilesPlugin extends AutoPlugin {
@@ -93,9 +98,8 @@ object SecureFilesPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override def projectSettings: Seq[Def.Setting[?]] = {
+  override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ secureFilesSettings
-  }
 }
 
 object PublishGitLabPlugin extends AutoPlugin {
@@ -107,9 +111,8 @@ object PublishGitLabPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  override def projectSettings: Seq[Def.Setting[?]] = {
+  override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ publishSettings
-  }
 }
 
 object LibProjectPlugin extends AutoPlugin {
@@ -117,9 +120,9 @@ object LibProjectPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.javaProject ++
-    ProjectSettingsDefs.jsonProject ++
-    ProjectSettingsDefs.libProject
+      ProjectSettingsDefs.javaProject ++
+      ProjectSettingsDefs.jsonProject ++
+      ProjectSettingsDefs.libProject
 }
 object ProtoOnlyPekkoProjectPlugin extends AutoPlugin {
   override val requires: Plugins = PekkoGrpcPlugin
@@ -131,27 +134,27 @@ object LibProjectPekkoPlugin extends AutoPlugin {
   override val requires: Plugins = LibProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.pekkoProject
+      ProjectSettingsDefs.pekkoProject
 }
 object LibProjectPekkoPersistencePlugin extends AutoPlugin {
   override val requires: Plugins = LibProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.pekkoProject ++
-    ProjectSettingsDefs.pekkoPersistenceProject
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoPersistenceProject
 }
 object LibProjectPekkoProjectionPlugin extends AutoPlugin {
   override val requires: Plugins = LibProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.pekkoProject ++
-    ProjectSettingsDefs.pekkoProjectionProject
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoProjectionProject
 }
 object LibProjectPekkoKafkaPlugin extends AutoPlugin {
   override val requires: Plugins = LibProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.pekkoKafkaProject
+      ProjectSettingsDefs.pekkoKafkaProject
 }
 
 object LibManagedProjectPlugin extends AutoPlugin {
@@ -162,7 +165,7 @@ object LibManagedProjectPlugin extends AutoPlugin {
 object LibUnmanagedProjectPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.unmanagedProject
+      ProjectSettingsDefs.unmanagedProject
 }
 
 object DockerPublishPlugin extends AutoPlugin {
@@ -171,7 +174,7 @@ object DockerPublishPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
-    ProjectSettingsDefs.dockerPublishProject ++dockerBuildxSettings
+      ProjectSettingsDefs.dockerPublishProject ++ dockerBuildxSettings
 
   lazy val ensureDockerBuildx = taskKey[Unit]("Ensure that docker buildx configuration exists")
   lazy val dockerBuildWithBuildx = taskKey[Unit]("Build docker images using buildx")
@@ -183,16 +186,21 @@ object DockerPublishPlugin extends AutoPlugin {
     },
     dockerBuildWithBuildx := {
       streams.value.log("Building and pushing image with Buildx")
-      dockerAliases.value.foreach(
-        alias => Process("docker buildx build --platform=linux/arm64,linux/amd64 --push -t " +
-          alias + " .", baseDirectory.value / "target" / "docker"/ "stage").!
+      dockerAliases.value.foreach(alias =>
+        Process(
+          "docker buildx build --platform=linux/arm64,linux/amd64 --push -t " +
+            alias + " .",
+          baseDirectory.value / "target" / "docker" / "stage",
+        ).!
       )
     },
-    Docker / publish := Def.sequential(
-      Docker / publishLocal,
-      ensureDockerBuildx,
-      dockerBuildWithBuildx
-    ).value
+    Docker / publish := Def
+      .sequential(
+        Docker / publishLocal,
+        ensureDockerBuildx,
+        dockerBuildWithBuildx,
+      )
+      .value,
   )
 }
 
@@ -208,8 +216,7 @@ object CoreProjectPlugin extends AutoPlugin {
 }
 object ValueAddProjectPlugin extends AutoPlugin {
 
-  override val requires
-  : Plugins = DockerPublishPlugin &&
+  override val requires: Plugins = DockerPublishPlugin &&
     PekkoGrpcPlugin &&
     LibProjectPekkoPlugin &&
     LibProjectPekkoPersistencePlugin &&

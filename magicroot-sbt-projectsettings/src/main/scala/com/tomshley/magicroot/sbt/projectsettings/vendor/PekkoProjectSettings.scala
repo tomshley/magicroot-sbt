@@ -16,7 +16,7 @@ object PekkoProjectSettings {
     val TestContainers = "1.20.0"
     val ScalaTest = "3.2.19"
   }
-  
+
   object Resolvers {
     val pekkoResolvers: Seq[MavenRepository] = Seq(
       Resolver.ApacheMavenSnapshotsRepo
@@ -50,20 +50,20 @@ object PekkoProjectSettings {
       "org.apache.pekko" %% "pekko-slf4j" % PekkoProjectSettings.Versions.PekkoVersion,
       "org.apache.pekko" %% "pekko-cluster-sharding-typed" % PekkoProjectSettings.Versions.PekkoVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % PekkoProjectSettings.Versions.PekkoVersion % Test,
-      "org.apache.pekko" %% "pekko-stream-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test
+      "org.apache.pekko" %% "pekko-stream-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test,
     )
 
     val pekkoPersistenceLibraries: Seq[ModuleID] = Seq(
       "org.apache.pekko" %% "pekko-persistence-r2dbc" % PekkoProjectSettings.Versions.PekkoManagementVersion,
       "org.apache.pekko" %% "pekko-persistence-typed" % PekkoProjectSettings.Versions.PekkoVersion,
-      "org.apache.pekko" %% "pekko-persistence-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test
+      "org.apache.pekko" %% "pekko-persistence-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test,
     )
 
     val pekkoProjectionLibraries: Seq[ModuleID] = Seq(
       "org.apache.pekko" %% "pekko-projection-core" % PekkoProjectSettings.Versions.PekkoManagementVersion,
       "org.apache.pekko" %% "pekko-projection-r2dbc" % PekkoProjectSettings.Versions.PekkoManagementVersion,
       "org.apache.pekko" %% "pekko-projection-eventsourced" % PekkoProjectSettings.Versions.PekkoManagementVersion,
-      "org.apache.pekko" %% "pekko-persistence-query" % PekkoProjectSettings.Versions.PekkoVersion
+      "org.apache.pekko" %% "pekko-persistence-query" % PekkoProjectSettings.Versions.PekkoVersion,
     )
 
     val pekkoKafkaLibraries: Seq[ModuleID] = Seq(
@@ -72,8 +72,7 @@ object PekkoProjectSettings {
       "io.confluent" % "kafka-avro-serializer" % PekkoProjectSettings.Versions.KafkaAvroVersion,
       "org.apache.pekko" %% "pekko-connectors-kafka" % PekkoProjectSettings.Versions.PekkoKafkaConnector,
       "org.apache.pekko" %% "pekko-connectors-kafka-cluster-sharding" % PekkoProjectSettings.Versions.PekkoKafkaConnector,
-
-      "org.testcontainers" % "kafka" % PekkoProjectSettings.Versions.TestContainers % Test
+      "org.testcontainers" % "kafka" % PekkoProjectSettings.Versions.TestContainers % Test,
     )
   }
 }

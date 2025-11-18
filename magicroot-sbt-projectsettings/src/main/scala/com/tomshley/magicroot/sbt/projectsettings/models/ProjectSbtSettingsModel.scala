@@ -21,4 +21,7 @@ package com.tomshley.magicroot.sbt.projectsettings.models
 import com.tomshley.magicroot.sbt.common.SbtProjectHelper
 import sbt.File
 
-protected[projectsettings] case class ProjectSbtSettingsModel(projectName: String, projectBaseOption: Option[File] = None) extends SbtProjectHelper
+protected[projectsettings] case class ProjectSbtSettingsModel(
+  projectName: String,
+  projectBaseOption: Option[File] = None,
+) extends SbtProjectHelper

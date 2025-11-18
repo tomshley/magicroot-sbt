@@ -11,7 +11,9 @@ object AkkaProjectSettings {
   val ScalaVersions: Seq[String] = AkkaProjectSettings.Scala2Versions :+ AkkaProjectSettings.Scala3
 
   object Scala3Settings {
-    val settings: Seq[Def.Setting[Seq[String]]] = Seq(crossScalaVersions := AkkaProjectSettings.ScalaVersions)
+    val settings: Seq[Def.Setting[Seq[String]]] = Seq(
+      crossScalaVersions := AkkaProjectSettings.ScalaVersions
+    )
   }
 
   object Versions {
@@ -79,20 +81,20 @@ object AkkaProjectSettings {
       "com.typesafe.akka" %% "akka-cluster-sharding-typed" % AkkaProjectSettings.Versions.AkkaVersion,
       "com.lightbend.akka" %% "akka-diagnostics" % AkkaProjectSettings.Versions.AkkaDiagnosticsVersion,
       "com.typesafe.akka" %% "akka-actor-testkit-typed" % AkkaProjectSettings.Versions.AkkaVersion % Test,
-      "com.typesafe.akka" %% "akka-stream-testkit" % AkkaProjectSettings.Versions.AkkaVersion % Test
+      "com.typesafe.akka" %% "akka-stream-testkit" % AkkaProjectSettings.Versions.AkkaVersion % Test,
     )
 
     val akkaPersistenceProjectSettings: Seq[ModuleID] = Seq(
       "com.typesafe.akka" %% "akka-persistence-r2dbc" % AkkaProjectSettings.Versions.AkkaManagementVersion,
       "com.typesafe.akka" %% "akka-persistence-typed" % AkkaProjectSettings.Versions.AkkaVersion,
-      "com.typesafe.akka" %% "akka-persistence-testkit" % AkkaProjectSettings.Versions.AkkaVersion % Test
+      "com.typesafe.akka" %% "akka-persistence-testkit" % AkkaProjectSettings.Versions.AkkaVersion % Test,
     )
 
     val akkaProjectionProjectSettings: Seq[ModuleID] = Seq(
       "com.lightbend.akka" %% "akka-projection-core" % AkkaProjectSettings.Versions.AkkaProjectionVersion,
       "com.lightbend.akka" %% "akka-projection-r2dbc" % AkkaProjectSettings.Versions.AkkaProjectionVersion,
       "com.lightbend.akka" %% "akka-projection-eventsourced" % AkkaProjectSettings.Versions.AkkaProjectionVersion,
-      "com.typesafe.akka" %% "akka-persistence-query" % AkkaProjectSettings.Versions.AkkaVersion
+      "com.typesafe.akka" %% "akka-persistence-query" % AkkaProjectSettings.Versions.AkkaVersion,
     )
 
     val akkaKafkaProjectSettings: Seq[ModuleID] = Seq(
@@ -100,7 +102,7 @@ object AkkaProjectSettings {
       "io.confluent" % "kafka-streams-avro-serde" % "5.2.1",
       "io.confluent" % "kafka-avro-serializer" % AkkaProjectSettings.Versions.KafkaAvroVersion,
       "com.typesafe.akka" %% "akka-stream-kafka" % AkkaProjectSettings.Versions.AlpakkaKafkaVersion,
-      "org.testcontainers" % "kafka" % "1.20.0" % Test
+      "org.testcontainers" % "kafka" % "1.20.0" % Test,
     )
   }
 }
