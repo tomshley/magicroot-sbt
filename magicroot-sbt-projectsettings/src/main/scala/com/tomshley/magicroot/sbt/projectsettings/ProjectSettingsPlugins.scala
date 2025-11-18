@@ -166,7 +166,7 @@ object LibUnmanagedProjectPlugin extends AutoPlugin {
 }
 
 object DockerPublishPlugin extends AutoPlugin {
-  override def requires = JavaAppPackaging && 
+  override def requires = JavaAppPackaging &&
     DockerPlugin
 
   override def projectSettings: Seq[Def.Setting[?]] =
@@ -198,9 +198,9 @@ object DockerPublishPlugin extends AutoPlugin {
 
 object CoreProjectPlugin extends AutoPlugin {
 
-  override val requires: Plugins = DockerPublishPlugin && 
-    PekkoGrpcPlugin && 
-    LibProjectPekkoPlugin && 
+  override val requires: Plugins = DockerPublishPlugin &&
+    PekkoGrpcPlugin &&
+    LibProjectPekkoPlugin &&
     LibManagedProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
@@ -209,12 +209,12 @@ object CoreProjectPlugin extends AutoPlugin {
 object ValueAddProjectPlugin extends AutoPlugin {
 
   override val requires
-  : Plugins = DockerPublishPlugin && 
-    PekkoGrpcPlugin && 
-    LibProjectPekkoPlugin && 
-    LibProjectPekkoPersistencePlugin && 
-    LibProjectPekkoProjectionPlugin && 
-    LibProjectPekkoKafkaPlugin && 
+  : Plugins = DockerPublishPlugin &&
+    PekkoGrpcPlugin &&
+    LibProjectPekkoPlugin &&
+    LibProjectPekkoPersistencePlugin &&
+    LibProjectPekkoProjectionPlugin &&
+    LibProjectPekkoKafkaPlugin &&
     LibManagedProjectPlugin
 
   override def projectSettings: Seq[Def.Setting[?]] =

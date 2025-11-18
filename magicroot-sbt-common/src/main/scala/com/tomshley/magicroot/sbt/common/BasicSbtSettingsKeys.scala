@@ -20,5 +20,4 @@
 package com.tomshley.magicroot.sbt.common
 
 protected[magicroot] trait BasicSbtSettingsKeys {
-//  lazy val someCommonKey = settingKey[Any]("an example common key")
 }
