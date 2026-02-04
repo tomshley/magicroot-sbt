@@ -204,8 +204,18 @@ object CoreProjectPlugin extends AutoPlugin {
     LibManagedProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
-//    ProjectSettingsDefs.magicrootAkkaGrpcProject
 }
+
+/** CoreProjectPlugin with boilerplate-core and boilerplate-pekko */
+object CoreBoilerplateProjectPlugin extends AutoPlugin {
+
+  override val requires: Plugins = CoreProjectPlugin &&
+    BoilerplatePekkoPlugin
+  
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings
+}
+
 object ValueAddProjectPlugin extends AutoPlugin {
 
   override val requires: Plugins = DockerPublishPlugin &&
@@ -220,9 +230,21 @@ object ValueAddProjectPlugin extends AutoPlugin {
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
 }
 
+/** ValueAddProjectPlugin with boilerplate persistence, kafka, and outbox */
+object ValueAddBoilerplateProjectPlugin extends AutoPlugin {
+
+  override val requires: Plugins = ValueAddProjectPlugin &&
+    BoilerplatePersistencePlugin &&
+    BoilerplateKafkaPlugin &&
+    BoilerplateOutboxPlugin &&
+    BoilerplateStoragePlugin
+  
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings
+}
+
 object EdgeProjectPlugin extends AutoPlugin {
   override val requires: Plugins = DockerPublishPlugin &&
-    DockerPublishPlugin &&
     SbtTwirl &&
     PekkoGrpcPlugin &&
     LibProjectPekkoPlugin &&
@@ -232,6 +254,15 @@ object EdgeProjectPlugin extends AutoPlugin {
     LibManagedProjectPlugin
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
+}
+
+/** EdgeProjectPlugin with all boilerplate modules */
+object EdgeBoilerplateProjectPlugin extends AutoPlugin {
+  override val requires: Plugins = EdgeProjectPlugin &&
+    BoilerplateAllPlugin
+  
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings
 }
 
 object EdgeWebPlugin extends AutoPlugin {
