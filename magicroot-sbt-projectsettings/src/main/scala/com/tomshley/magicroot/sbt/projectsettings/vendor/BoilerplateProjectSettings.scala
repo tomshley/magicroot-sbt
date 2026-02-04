@@ -27,7 +27,7 @@ import sbt.*
 object BoilerplateProjectSettings {
   
   object Versions {
-    val BoilerplateVersion = "1.0.0"
+    val boilerplateVersion = "1.1.0"
   }
   
   object Resolvers {
@@ -41,37 +41,37 @@ object BoilerplateProjectSettings {
     
     /** Core utilities: logging, JSON, time, config */
     val boilerplateCoreLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-core" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-core" % boilerplateVersion
     )
     
     /** Pekko actor utilities: cluster, sharding, HTTP routing */
     val boilerplatePekkoLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-pekko" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-pekko" % boilerplateVersion
     )
     
     /** CloudEvents transport abstractions */
     val boilerplateTransportLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-transport" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-transport" % boilerplateVersion
     )
     
     /** Blob storage with S3 implementation (claim-check pattern) */
     val boilerplateStorageLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-storage" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-storage" % boilerplateVersion
     )
     
     /** Kafka producer utilities with Avro/Proto serialization */
     val boilerplateKafkaLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-kafka" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-kafka" % boilerplateVersion
     )
     
     /** Event-sourced entity and projection abstractions */
     val boilerplatePersistenceLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-persistence" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-persistence" % boilerplateVersion
     )
     
     /** Transactional outbox pattern with Kafka publisher */
     val boilerplateOutboxLibraries: Seq[ModuleID] = Seq(
-      "com.tomshley.boilerplate" %% "boilerplate-outbox" % BoilerplateVersion
+      "com.tomshley.boilerplate" %% "boilerplate-outbox" % boilerplateVersion
     )
     
     /** All boilerplate libraries combined */
