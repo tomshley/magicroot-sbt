@@ -7,8 +7,6 @@ addSbtPlugin("com.eed3si9n" % "sbt-assembly" % "1.2.0")
       """|The system property 'plugin.version' is not defined.
          |Specify this property using the scriptedLaunchOpts -D.""".stripMargin)
   else addSbtPlugin(
-    "systems.toqen.tlib.sbt" %%
-      "hexagonal" %
-      pluginVersion
+    "com.tomshley.magicroot" % "magicroot-sbt-projectsettings" % pluginVersion
   )
 }
