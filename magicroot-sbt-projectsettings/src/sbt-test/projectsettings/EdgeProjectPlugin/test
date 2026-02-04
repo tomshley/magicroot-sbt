@@ -1,0 +1,16 @@
+# check if the file gets created
+> assembly
+$ exists target/scala-3.2.2/classes/projectsbttest.jar
+
+# check settings
+> check
+> checkOrg
+> checkScalaDir
+
+# check enablements
+> checkQuality
+> checkBasicSerialization
+> checkBasicAkka
+> checkAvro
+> checkProto
+> checkTime
