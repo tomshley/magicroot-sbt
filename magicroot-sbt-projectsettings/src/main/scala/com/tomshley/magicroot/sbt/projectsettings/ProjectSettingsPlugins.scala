@@ -19,15 +19,7 @@
 package com.tomshley.magicroot.sbt
 package projectsettings
 
-import com.tomshley.magicroot.sbt.projectsettings.keys.{
-  CommonProjectKeys,
-  ForkJVMRunConfigKeys,
-  ProjectTypeKeys,
-  PublishGitLabPluginKeys,
-  SecureFilesPluginKeys,
-  VersionFilePluginKeys,
-  WebPluginKeys,
-}
+import com.tomshley.magicroot.sbt.projectsettings.keys.*
 import com.tomshley.magicroot.sbt.projectsettings.settings.ProjectSettingsDefs
 import com.typesafe.sbt.packager.Keys.dockerAliases
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
@@ -36,8 +28,8 @@ import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.Docker
 import com.typesafe.sbt.web.SbtWeb
 import org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
 import play.twirl.sbt.SbtTwirl
-import sbt.Keys.{ baseDirectory, publish, publishLocal, streams }
 import sbt.*
+import sbt.Keys.{baseDirectory, publish, publishLocal, streams}
 
 import scala.sys.process.Process
 
@@ -249,55 +241,80 @@ object EdgeWebPlugin extends AutoPlugin {
 
   object autoImport extends WebPluginKeys
 
-  import autoImport.*
+}
 
-//  override def projectSettings: Seq[Setting[_]] = Seq(
-//    gzip / includeFilter := "*.html" || "*.css" || "*.js",
-//    gzip / excludeFilter := HiddenFileFilter,
-//    gzip / target := webTarget.value / gzip.key.label,
-//    deduplicators += SbtWeb.selectFileFrom((gzip / target).value),
-//    gzip := gzipFiles.value,
-//    webContentCopy := {
-//      val assetsDir = (Assets / sourceDirectory).value
-//      val publicDir = (Assets / resourceDirectory).value
-//      val managedDir = (Assets / resourceManaged).value
-//      val targetWebDir = webTarget.value
-//      val resources = publicDir.**(_.isFile).get()
-//      val mappings = resources pair relativeTo(publicDir)
-//      //      val renamed = mappings map { case (file, path) => file -> path.replaceAll("js", "paste.js") }
-//      //      val copies = renamed map { case (file, path) => file -> managedDir / path }
-//      println("&*****************")
-//      println("(Assets/sourceDirectory)" + assetsDir)
-//      println("(Assets/resourceDirectory)" + publicDir)
-//      println("(Assets / resourceManaged)" + managedDir)
-//      println("(webTarget)" + targetWebDir)
-//      println("(resources)" + resources)
-//      println("(mappings)" + mappings)
-//      //      println("(renamed)" + renamed)
-//      //      println("(copies)" + copies)
-//      println("&*****************")
-//
-//      val (js, other) = mappings partition (_._2.endsWith(".js"))
-//      val minFile = targetWebDir / "js" / "all.min.js"
-//      IO.touch(minFile)
-//      val minMappings = Seq(minFile) pair relativeTo(targetWebDir)
-//      minMappings ++ other
-//    }
-//  )
-//
-//  def gzipFiles: Def.Initialize[Task[Pipeline.Stage]] = Def.task {
-//    val targetDir = (gzip / target).value
-//    val include = (gzip / includeFilter).value
-//    val exclude = (gzip / excludeFilter).value
-//    mappings =>
-//      val gzipMappings = for {
-//        (file, path) <- mappings if !file.isDirectory && include.accept(file) && !exclude.accept(file)
-//      } yield {
-//        val gzipPath = path + ".gz"
-//        val gzipFile = targetDir / gzipPath
-//        IO.gzip(file, gzipFile)
-//        (gzipFile, gzipPath)
-//      }
-//      mappings ++ gzipMappings
-//  }
+// =============================================================================
+// Boilerplate JVM Module Plugins - orthogonal plugins for each module
+// =============================================================================
+
+/** Adds boilerplate-core: logging, JSON, time, config utilities */
+object BoilerplateCorePlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BaseProjectSettingsPlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplateCoreProject
+}
+
+/** Adds boilerplate-pekko: Pekko actor utilities, cluster, sharding */
+object BoilerplatePekkoPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BoilerplateCorePlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplatePekkoProject
+}
+
+/** Adds boilerplate-transport: CloudEvents transport abstractions */
+object BoilerplateTransportPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BoilerplateCorePlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplateTransportProject
+}
+
+/** Adds boilerplate-storage: Blob storage with S3 (claim-check pattern) */
+object BoilerplateStoragePlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BoilerplatePekkoPlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplateStorageProject
+}
+
+/** Adds boilerplate-kafka: Kafka producer with Avro/Proto serialization */
+object BoilerplateKafkaPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BoilerplatePekkoPlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplateKafkaProject
+}
+
+/** Adds boilerplate-persistence: Event-sourced entities and projections */
+object BoilerplatePersistencePlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BoilerplatePekkoPlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplatePersistenceProject
+}
+
+/** Adds boilerplate-outbox: Transactional outbox with Kafka publisher */
+object BoilerplateOutboxPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BoilerplateKafkaPlugin && BoilerplatePersistencePlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplateOutboxProject
+}
+
+/** Adds all boilerplate modules - convenience plugin for full stack */
+object BoilerplateAllPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = BaseProjectSettingsPlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ ProjectSettingsDefs.boilerplateAllProject
 }
