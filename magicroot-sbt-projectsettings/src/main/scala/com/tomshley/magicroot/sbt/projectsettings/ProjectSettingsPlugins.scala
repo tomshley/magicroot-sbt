@@ -206,16 +206,6 @@ object CoreProjectPlugin extends AutoPlugin {
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
 }
 
-/** CoreProjectPlugin with boilerplate-core and boilerplate-pekko */
-object CoreBoilerplateProjectPlugin extends AutoPlugin {
-
-  override val requires: Plugins = CoreProjectPlugin &&
-    BoilerplatePekkoPlugin
-  
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings
-}
-
 object ValueAddProjectPlugin extends AutoPlugin {
 
   override val requires: Plugins = DockerPublishPlugin &&
@@ -228,19 +218,6 @@ object ValueAddProjectPlugin extends AutoPlugin {
 
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
-}
-
-/** ValueAddProjectPlugin with boilerplate persistence, kafka, and outbox */
-object ValueAddBoilerplateProjectPlugin extends AutoPlugin {
-
-  override val requires: Plugins = ValueAddProjectPlugin &&
-    BoilerplatePersistencePlugin &&
-    BoilerplateKafkaPlugin &&
-    BoilerplateOutboxPlugin &&
-    BoilerplateStoragePlugin
-  
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings
 }
 
 object EdgeProjectPlugin extends AutoPlugin {
@@ -256,15 +233,6 @@ object EdgeProjectPlugin extends AutoPlugin {
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
 }
 
-/** EdgeProjectPlugin with all boilerplate modules */
-object EdgeBoilerplateProjectPlugin extends AutoPlugin {
-  override val requires: Plugins = EdgeProjectPlugin &&
-    BoilerplateAllPlugin
-  
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings
-}
-
 object EdgeWebPlugin extends AutoPlugin {
   override def requires: Plugins = SbtWeb
 
@@ -275,77 +243,72 @@ object EdgeWebPlugin extends AutoPlugin {
 }
 
 // =============================================================================
-// Boilerplate JVM Module Plugins - orthogonal plugins for each module
+// Edge Ingest Plugins - for TCP/gRPC ingestion services (AMI-like)
 // =============================================================================
 
-/** Adds boilerplate-core: logging, JSON, time, config utilities */
-object BoilerplateCorePlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BaseProjectSettingsPlugin
-
+/** EdgeIngestProjectPlugin - TCP + gRPC + EventSourced + Kafka (no Twirl) */
+object EdgeIngestProjectPlugin extends AutoPlugin {
+  override val requires: Plugins = DockerPublishPlugin &&
+    PekkoGrpcPlugin &&
+    LibProjectPekkoPlugin &&
+    LibProjectPekkoPersistencePlugin &&
+    LibProjectPekkoProjectionPlugin &&
+    LibProjectPekkoKafkaPlugin &&
+    LibManagedProjectPlugin
+  
   override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplateCoreProject
+    super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
 }
 
-/** Adds boilerplate-pekko: Pekko actor utilities, cluster, sharding */
-object BoilerplatePekkoPlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BoilerplateCorePlugin
+// =============================================================================
+// Utility Plugins
+// =============================================================================
 
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplatePekkoProject
+/** GitLabSourceDependencyPlugin - manages GitLab Maven credentials for source dependencies */
+object GitLabSourceDependencyPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = plugins.JvmPlugin
+
+  object autoImport {
+    val gitlabCredentials = settingKey[Map[Int, File]](
+      "GitLab project ID to credential file mapping"
+    )
+  }
+
+  import autoImport._
+
+  override def projectSettings: Seq[Def.Setting[?]] = Seq(
+    gitlabCredentials := Map.empty,
+    Keys.resolvers ++= gitlabCredentials.value.keys.toSeq.map(id =>
+      s"GitLab-$id" at s"https://gitlab.com/api/v4/projects/$id/packages/maven"
+    ),
+    Keys.credentials ++= gitlabCredentials.value.values.toSeq
+      .distinct
+      .filter(_.exists())
+      .map(Credentials(_))
+  )
 }
 
-/** Adds boilerplate-transport: CloudEvents transport abstractions */
-object BoilerplateTransportPlugin extends AutoPlugin {
+/** AcceptanceTestPlugin - Cucumber/Gherkin integration for acceptance testing */
+object AcceptanceTestPlugin extends AutoPlugin {
   override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BoilerplateCorePlugin
+  override val requires: Plugins = plugins.JvmPlugin
 
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplateTransportProject
-}
+  object autoImport {
+    val acceptanceFeaturesDependency = settingKey[Option[ModuleID]](
+      "Optional dependency containing .feature files"
+    )
+  }
 
-/** Adds boilerplate-storage: Blob storage with S3 (claim-check pattern) */
-object BoilerplateStoragePlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BoilerplatePekkoPlugin
+  import autoImport._
 
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplateStorageProject
-}
-
-/** Adds boilerplate-kafka: Kafka producer with Avro/Proto serialization */
-object BoilerplateKafkaPlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BoilerplatePekkoPlugin
-
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplateKafkaProject
-}
-
-/** Adds boilerplate-persistence: Event-sourced entities and projections */
-object BoilerplatePersistencePlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BoilerplatePekkoPlugin
-
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplatePersistenceProject
-}
-
-/** Adds boilerplate-outbox: Transactional outbox with Kafka publisher */
-object BoilerplateOutboxPlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BoilerplateKafkaPlugin && BoilerplatePersistencePlugin
-
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplateOutboxProject
-}
-
-/** Adds all boilerplate modules - convenience plugin for full stack */
-object BoilerplateAllPlugin extends AutoPlugin {
-  override val trigger: PluginTrigger = noTrigger
-  override val requires: Plugins = BaseProjectSettingsPlugin
-
-  override def projectSettings: Seq[Def.Setting[?]] =
-    super.projectSettings ++ ProjectSettingsDefs.boilerplateAllProject
+  override def projectSettings: Seq[Def.Setting[?]] = Seq(
+    acceptanceFeaturesDependency := None,
+    Keys.libraryDependencies ++= acceptanceFeaturesDependency.value.toSeq.map(_ % Test),
+    Keys.libraryDependencies ++= Seq(
+      "io.cucumber" % "cucumber-core" % "7.18.1" % Test,
+      "io.cucumber" %% "cucumber-scala" % "8.23.1" % Test,
+      "io.cucumber" % "cucumber-junit" % "7.18.1" % Test
+    )
+  )
 }
