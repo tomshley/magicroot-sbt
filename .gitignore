@@ -1,26 +1,16 @@
-# SBT
-.bsp/
-target/
-project/project/
-project/target/
-.sbt/
-
-# Compiled
-*.class
-*.jar
+# --- BEGIN multi-project ignores ---
 
 # IDE
 .idea/
 *.iml
 .metals/
+.vscode/
 
 # Logs
 *.log
 
 # Secrets
 *.env
-.credentials.*
-!.credentials.*.example
 .secure_files/*
 !.secure_files/
 !.secure_files/*.example
@@ -31,3 +21,16 @@ endpoint.config
 # OS
 .DS_Store
 Thumbs.db
+
+# --- END multi-project ignores ---
+
+# SBT
+.bsp/
+target/
+project/project/
+project/target/
+.sbt/
+
+# Compiled
+*.class
+*.jar
