@@ -20,7 +20,6 @@ package com.tomshley.magicroot.sbt.projectsettings.settings
 
 import com.tomshley.magicroot.sbt.projectsettings.vendor.{
   AkkaProjectSettings,
-  BoilerplateProjectSettings,
   PekkoProjectSettings,
 }
 import com.typesafe.sbt.packager.Keys.{ dockerBaseImage, dockerExposedPorts, dockerUpdateLatest }
@@ -149,54 +148,5 @@ protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVer
   lazy val unmanagedProject: Seq[Def.Setting[?]] = Seq(
     Test / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
     Compile / unmanagedResourceDirectories += baseDirectory.value / "src" / "main" / "resources",
-  )
-
-  // Boilerplate JVM module settings
-  lazy val boilerplateCoreProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplateCoreLibraries,
-  )
-
-  lazy val boilerplatePekkoProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplatePekkoLibraries,
-  )
-
-  lazy val boilerplateTransportProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplateTransportLibraries,
-  )
-
-  lazy val boilerplateStorageProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplateStorageLibraries,
-  )
-
-  lazy val boilerplateKafkaProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplateKafkaLibraries,
-  )
-
-  lazy val boilerplatePersistenceProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplatePersistenceLibraries,
-  )
-
-  lazy val boilerplateOutboxProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplateOutboxLibraries,
-  )
-
-  lazy val boilerplateAllProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= BoilerplateProjectSettings.Resolvers.boilerplateResolvers,
-    libraryDependencies ++= BoilerplateProjectSettings.Libraries.boilerplateAllLibraries,
   )
 }
