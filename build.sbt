@@ -12,7 +12,7 @@ lazy val assemblySettings = Seq(
 lazy val publishSettings = Seq(
   ThisBuild / resolvers ++= Registry.additionalResolvers(gitlabCIProjectId),
   ThisBuild / credentials += Registry.credentials(
-    Some((ThisBuild / baseDirectory).value / ".credentials.gitlab")
+    Some((ThisBuild / baseDirectory).value / ".secure_files" / ".credentials.gitlab")
   ),
   ThisBuild / publishTo := Registry.publishToGitlab(gitlabCIProjectId)
 )
