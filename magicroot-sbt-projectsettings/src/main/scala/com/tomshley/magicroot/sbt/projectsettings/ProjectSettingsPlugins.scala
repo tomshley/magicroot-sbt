@@ -308,7 +308,9 @@ object AcceptanceTestPlugin extends AutoPlugin {
     Keys.libraryDependencies ++= Seq(
       "io.cucumber" % "cucumber-core" % "7.18.1" % Test,
       "io.cucumber" %% "cucumber-scala" % "8.23.1" % Test,
-      "io.cucumber" % "cucumber-junit" % "7.18.1" % Test
+      "io.cucumber" % "cucumber-junit" % "7.18.1" % Test,
+      "com.microsoft.playwright" % "playwright" % "1.41.0" % Test,
+      "io.qameta.allure" % "allure-cucumber7-jvm" % "2.25.0" % Test
     )
   )
 }
