@@ -31,11 +31,11 @@ protected[projectsettings] trait WebPluginKeys extends BasicSbtSettingsKeys {
 
   val simpleUrlUpdate = TaskKey[Pipeline.Stage](
     "simple-url-update",
-    "Update assets url in static css or js files with in asset pipeline."
+    "Update assets url in static css or js files with in asset pipeline.",
   )
 
   val algorithms = SettingKey[Seq[String]](
     "digest-algorithms",
-    "Types of checksum used in the digest pipeline to generate."
+    "Types of checksum used in the digest pipeline to generate.",
   )
 }

@@ -21,7 +21,7 @@ package com.tomshley.magicroot.sbt.projectsettings.keys
 
 import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.Keys.*
-import sbt.{Def, *}
+import sbt.{ Def, * }
 sealed trait GitLabCredentials {
   def gitLabPublishCredentials(credentialFileOption: Option[File]): Credentials =
     sys.env
@@ -31,7 +31,7 @@ sealed trait GitLabCredentials {
           "GitLab Packages Registry",
           "gitlab.com",
           "gitlab-ci-token",
-          _
+          _,
         )
       )
       .getOrElse(Credentials(credentialFileOption.getOrElse(file(".credentials.gitlab"))))
@@ -46,14 +46,18 @@ sealed trait GitLabCredentials {
       "gitlab" at s"https://gitlab.com/api/v4/projects/$projectId/packages/maven"
     )
 }
-protected[projectsettings] trait PublishGitLabPluginKeys extends BasicSbtSettingsKeys with GitLabCredentials {
+protected[projectsettings] trait PublishGitLabPluginKeys
+    extends BasicSbtSettingsKeys
+    with GitLabCredentials {
   val publishGitLabProjectId: SettingKey[Int] = settingKey[Int]("Project Id of the gitlab project")
 
-  lazy val publishSettings: Seq[Def.Setting[? >: Seq[Resolver] & Task[Seq[Credentials]] & Task[Option[Resolver]] <: Equals]] = Seq(
+  lazy val publishSettings: Seq[
+    Def.Setting[? >: Seq[Resolver] & Task[Seq[Credentials]] & Task[Option[Resolver]] <: Equals]
+  ] = Seq(
     ThisBuild / resolvers ++= gitLabPublishAdditionalResolvers(publishGitLabProjectId.value),
     ThisBuild / credentials += gitLabPublishCredentials(
       Some((ThisBuild / baseDirectory).value / ".credentials.gitlab")
     ),
-    ThisBuild / publishTo := gitLabPublishTo(publishGitLabProjectId.value)
+    ThisBuild / publishTo := gitLabPublishTo(publishGitLabProjectId.value),
   )
 }

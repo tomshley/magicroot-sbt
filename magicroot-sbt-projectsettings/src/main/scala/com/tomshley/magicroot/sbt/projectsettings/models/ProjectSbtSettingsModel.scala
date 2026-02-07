@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Tomshley LLC
+ * Copyright 2026 Tomshley LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,4 +21,7 @@ package com.tomshley.magicroot.sbt.projectsettings.models
 import com.tomshley.magicroot.sbt.common.SbtProjectHelper
 import sbt.File
 
-protected[projectsettings] case class ProjectSbtSettingsModel(projectName: String, projectBaseOption: Option[File] = None) extends SbtProjectHelper
+protected[projectsettings] case class ProjectSbtSettingsModel(
+  projectName: String,
+  projectBaseOption: Option[File] = None,
+) extends SbtProjectHelper

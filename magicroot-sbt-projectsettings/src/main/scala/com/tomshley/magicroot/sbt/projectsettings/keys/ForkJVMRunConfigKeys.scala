@@ -21,14 +21,14 @@ package com.tomshley.magicroot.sbt.projectsettings.keys
 
 import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.Keys.*
-import sbt.{Def, *}
+import sbt.{ Def, * }
 
 protected[projectsettings] trait ForkJVMRunConfigKeys extends BasicSbtSettingsKeys {
   lazy val forkJVMRunConfigSettings: Seq[Def.Setting[? >: Boolean & Task[Seq[String]]]] = Seq(
     run / fork := true, // pass along config selection to forked jvm
     Compile / run / fork := true,
     run / javaOptions ++= sys.props
-        .get("config.resource")
-        .fold(Seq.empty[String])(res => Seq(s"-Dconfig.resource=$res"))
+      .get("config.resource")
+      .fold(Seq.empty[String])(res => Seq(s"-Dconfig.resource=$res")),
   )
 }

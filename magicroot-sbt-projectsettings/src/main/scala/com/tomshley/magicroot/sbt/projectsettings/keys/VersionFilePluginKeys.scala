@@ -21,13 +21,16 @@ package com.tomshley.magicroot.sbt.projectsettings.keys
 
 import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.Keys.*
-import sbt.{Def, *}
+import sbt.{ Def, * }
 
 protected[projectsettings] trait VersionFilePluginKeys extends BasicSbtSettingsKeys {
   lazy val versionFileSettings: Seq[Def.Setting[String]] = Seq(
     version := {
       val versionFile = (ThisBuild / baseDirectory).value / "VERSION"
-      val versionFileContents: Seq[String] = if (versionFile.exists()) IO.readLines(versionFile) else if (version.value.nonEmpty) Seq(version.value) else Seq.empty[String]
+      val versionFileContents: Seq[String] =
+        if (versionFile.exists()) IO.readLines(versionFile)
+        else if (version.value.nonEmpty) Seq(version.value)
+        else Seq.empty[String]
       versionFileContents.filter(s => !s.isBlank).mkString("-").trim.stripPrefix("v")
     }
   )
