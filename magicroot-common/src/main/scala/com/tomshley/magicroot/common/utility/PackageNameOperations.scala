@@ -22,19 +22,17 @@ package common
 package utility
 
 object PackageNameOperations {
-  def appNameToPackageName(appName: String): String = {
+  def appNameToPackageName(appName: String): String =
     appName
       .replace("_", ".")
       .replace("-", ".")
-  }
 
-  def appNameToArtifactName(appName: String): String = {
+  def appNameToArtifactName(appName: String): String =
     appName
       .replace(".", "_")
       .replace("\\s", "-")
-  }
 
-  def appNameToFileName(appName: String): String = {
+  def appNameToFileName(appName: String): String =
     appName
       .split('-')
       .map(_.capitalize)
@@ -45,9 +43,7 @@ object PackageNameOperations {
       .split('.')
       .map(_.capitalize)
       .mkString
-  }
 
-  def packageNameToFilepath(packageName: String): String = {
+  def packageNameToFilepath(packageName: String): String =
     packageName.replace(".", "/")
-  }
 }

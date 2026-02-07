@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Tomshley LLC
+ * Copyright 2026 Tomshley LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ package projecttemplate
 import com.tomshley.magicroot.common.model.ResourceTypes
 import com.tomshley.magicroot.sbt.common.UnmanagedResource
 import sbt.*
-import sbt.Keys.{baseDirectory, sLog}
+import sbt.Keys.{ baseDirectory, sLog }
 
 import java.nio.charset.Charset
 import java.nio.file.Files
@@ -47,29 +47,52 @@ object ProjectTemplatePlugin extends AutoPlugin {
 
     log.info("Enforcing file structure for a hexagonal project...")
 
-    lazy val gitignoreSource: UnmanagedResource = UnmanagedResource("templates/gitignore.tpl", ".gitignore", baseDirectory.value, unmanagedResourceTypeOption=Some(ResourceTypes.Template))
-    lazy val jvmoptsSource: UnmanagedResource = UnmanagedResource("templates/jvmopts.tpl", ".jvmopts", baseDirectory.value, unmanagedResourceTypeOption=Some(ResourceTypes.Template))
-    lazy val scalafmtSource: UnmanagedResource = UnmanagedResource("templates/scalafmt.tpl", ".scalafmt", baseDirectory.value, unmanagedResourceTypeOption=Some(ResourceTypes.Template))
-    lazy val licenseSource: UnmanagedResource = UnmanagedResource("templates/license.tpl", "LICENSE", baseDirectory.value, unmanagedResourceTypeOption=Some(ResourceTypes.Template))
-    lazy val versionSource: UnmanagedResource = UnmanagedResource("templates/version.tpl", "VERSION", baseDirectory.value, unmanagedResourceTypeOption=Some(ResourceTypes.Template))
+    lazy val gitignoreSource: UnmanagedResource = UnmanagedResource(
+      "templates/gitignore.tpl",
+      ".gitignore",
+      baseDirectory.value,
+      unmanagedResourceTypeOption = Some(ResourceTypes.Template),
+    )
+    lazy val jvmoptsSource: UnmanagedResource = UnmanagedResource(
+      "templates/jvmopts.tpl",
+      ".jvmopts",
+      baseDirectory.value,
+      unmanagedResourceTypeOption = Some(ResourceTypes.Template),
+    )
+    lazy val scalafmtSource: UnmanagedResource = UnmanagedResource(
+      "templates/scalafmt.tpl",
+      ".scalafmt",
+      baseDirectory.value,
+      unmanagedResourceTypeOption = Some(ResourceTypes.Template),
+    )
+    lazy val licenseSource: UnmanagedResource = UnmanagedResource(
+      "templates/license.tpl",
+      "LICENSE",
+      baseDirectory.value,
+      unmanagedResourceTypeOption = Some(ResourceTypes.Template),
+    )
+    lazy val versionSource: UnmanagedResource = UnmanagedResource(
+      "templates/version.tpl",
+      "VERSION",
+      baseDirectory.value,
+      unmanagedResourceTypeOption = Some(ResourceTypes.Template),
+    )
 
-    lazy val allTemplates = Seq(gitignoreSource, jvmoptsSource, scalafmtSource, licenseSource, versionSource)
+    lazy val allTemplates =
+      Seq(gitignoreSource, jvmoptsSource, scalafmtSource, licenseSource, versionSource)
 
-    allTemplates
-      .filterNot { s =>
-        s.targetFile.exists()
-      }
-      .foreach(t => {
-
-        Using(
-          scala.io.Source.createBufferedSource(t.unmanagedResourceURL.openStream())
-        ) { inputFile =>
-          Using(Files.newBufferedWriter(t.targetFile.toPath, Charset.forName("UTF-8"))) { outputFile =>
-            for (line <- inputFile.getLines) {
+    allTemplates.filterNot { s =>
+      s.targetFile.exists()
+    }.foreach { t =>
+      Using(
+        scala.io.Source.createBufferedSource(t.unmanagedResourceURL.openStream())
+      ) { inputFile =>
+        Using(Files.newBufferedWriter(t.targetFile.toPath, Charset.forName("UTF-8"))) {
+          outputFile =>
+            for (line <- inputFile.getLines)
               outputFile.write(line + "\n")
-            }
-          }
         }
-      })
+      }
+    }
   }
 }

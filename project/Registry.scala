@@ -12,7 +12,7 @@ object Registry {
           _
         )
       )
-      .getOrElse(Credentials(credentialFileOption.getOrElse(file(".credentials.gitlab"))))
+      .getOrElse(Credentials(credentialFileOption.getOrElse(file(".secure_files") / ".credentials.gitlab")))
 
   def additionalResolvers(projectId: Int): Seq[MavenRepository] = Seq(
     "GitLab" at

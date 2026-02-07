@@ -24,6 +24,7 @@ import com.tomshley.magicroot.common.model.HexagonalPart
 import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.*
 
-protected[projecttemplate] trait ProjectTemplateKeys extends BasicSbtSettingsKeys{
-  lazy val generateTemplateContent: TaskKey[Unit] = taskKey[Unit]("Generates project template content")
+protected[projecttemplate] trait ProjectTemplateKeys extends BasicSbtSettingsKeys {
+  lazy val generateTemplateContent: TaskKey[Unit] =
+    taskKey[Unit]("Generates project template content")
 }

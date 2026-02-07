@@ -21,7 +21,7 @@ package com.tomshley.magicroot.sbt.projectsettings.keys
 
 import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import com.tomshley.magicroot.sbt.projectsettings.settings.ProjectSettingsDefs
-import sbt.Keys.{licenses, scalacOptions, version}
+import sbt.Keys.{ licenses, scalacOptions, version }
 import sbt.url
 
 protected[projectsettings] trait CommonProjectKeys extends BasicSbtSettingsKeys {
@@ -31,11 +31,15 @@ protected[projectsettings] trait CommonProjectKeys extends BasicSbtSettingsKeys 
         if (version.value.endsWith("SNAPSHOT")) "main"
         else "v" + version.value
       Seq(
-        ("APACHE-2.0",
-          url("https://raw.githubusercontent.com/tomshley/magicroot-plugins-sbt/" + tagOrBranch + "/LICENSE"))
+        (
+          "APACHE-2.0",
+          url(
+            "https://raw.githubusercontent.com/tomshley/magicroot-plugins-sbt/" + tagOrBranch + "/LICENSE"
+          ),
+        )
       )
     },
-    scalacOptions += "-Wconf:cat=deprecation&msg=.*JavaConverters.*:s"
+    scalacOptions += "-Wconf:cat=deprecation&msg=.*JavaConverters.*:s",
   ) ++ ProjectSettingsDefs.scala3Settings
 
 }
