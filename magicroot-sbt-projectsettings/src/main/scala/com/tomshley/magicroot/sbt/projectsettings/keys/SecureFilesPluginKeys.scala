@@ -21,7 +21,7 @@ package com.tomshley.magicroot.sbt.projectsettings.keys
 
 import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.Keys.*
-import sbt.{Def, *}
+import sbt.{ Def, * }
 
 protected[projectsettings] trait SecureFilesPluginKeys extends BasicSbtSettingsKeys {
   lazy val secureFilesSettings: Seq[Def.Setting[Seq[File]]] = Seq(

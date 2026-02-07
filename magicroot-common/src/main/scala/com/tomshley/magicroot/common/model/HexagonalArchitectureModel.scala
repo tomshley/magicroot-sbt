@@ -42,4 +42,3 @@ case object Edge extends HexagonalLayer
 case object ValueAdd extends HexagonalLayer
 
 case object Core extends HexagonalLayer
-

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Tomshley LLC
+ * Copyright 2026 Tomshley LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 package com.tomshley.magicroot.sbt.common
 
-import sbt.{File, Project, file}
+import sbt.{ file, File, Project }
 
 protected[magicroot] trait SbtProjectHelper {
   val projectName: String
@@ -33,10 +33,10 @@ protected[magicroot] trait SbtProjectHelper {
    * }
    */
 
-  lazy val sbtProject: Project = {
+  lazy val sbtProject: Project =
     Project(
       id = projectName,
-      base = projectBaseOption.fold(ifEmpty = file(projectName))(projectFile => projectBaseOption.get)
+      base =
+        projectBaseOption.fold(ifEmpty = file(projectName))(projectFile => projectBaseOption.get),
     )
-  }
 }
