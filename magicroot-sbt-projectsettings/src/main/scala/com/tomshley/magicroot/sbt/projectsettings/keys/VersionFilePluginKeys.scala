@@ -24,14 +24,17 @@ import sbt.Keys.*
 import sbt.{ Def, * }
 
 protected[projectsettings] trait VersionFilePluginKeys extends BasicSbtSettingsKeys {
+  val baseVersion: SettingKey[String] = settingKey[String]("Base version read from the VERSION file")
+
+  /** @deprecated Use TomshleyCIBuildVersionPlugin instead. Since 1.3.3. */
   lazy val versionFileSettings: Seq[Def.Setting[String]] = Seq(
-    version := {
+    baseVersion := {
       val versionFile = (ThisBuild / baseDirectory).value / "VERSION"
       val versionFileContents: Seq[String] =
         if (versionFile.exists()) IO.readLines(versionFile)
-        else if (version.value.nonEmpty) Seq(version.value)
-        else Seq.empty[String]
+        else Seq("0.0.0")
       versionFileContents.filter(s => !s.isBlank).mkString("-").trim.stripPrefix("v")
-    }
+    },
+    version := baseVersion.value
   )
 }
