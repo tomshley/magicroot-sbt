@@ -4,7 +4,7 @@ import sbt.*
 
 object PekkoProjectSettings {
   object Versions {
-    val PekkoVersion = "1.1.0-M1"
+    val PekkoVersion = "1.1.3"
     val PekkoManagementVersion = "1.0.0"
     val PekkoKafkaConnector = "1.1.0-M1"
     val PekkoHttpVersion = "1.1.0"
