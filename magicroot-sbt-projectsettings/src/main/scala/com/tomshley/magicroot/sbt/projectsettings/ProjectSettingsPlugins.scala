@@ -81,6 +81,19 @@ object VersionFilePlugin extends AutoPlugin {
     super.projectSettings ++ versionFileSettings
 }
 
+object TomshleyCIBuildVersionPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+
+  override val requires: Plugins = VersionFilePlugin
+
+  object autoImport extends TomshleyCIBuildVersionPluginKeys
+
+  import autoImport.*
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ tomshleyCIBuildVersionSettings
+}
+
 object SecureFilesPlugin extends AutoPlugin {
   override val trigger: PluginTrigger = noTrigger
 

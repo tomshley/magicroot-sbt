@@ -1,0 +1,43 @@
+/*
+ * copyright 2023 tomshley llc
+ *
+ * licensed under the apache license, version 2.0 (the "license");
+ * you may not use this file except in compliance with the license.
+ * you may obtain a copy of the license at
+ *
+ * http://www.apache.org/licenses/license-2.0
+ *
+ * unless required by applicable law or agreed to in writing, software
+ * distributed under the license is distributed on an "as is" basis,
+ * without warranties or conditions of any kind, either express or implied.
+ * see the license for the specific language governing permissions and
+ * limitations under the license.
+ *
+ * @author thomas schena @sgoggles <https://github.com/sgoggles> | <https://gitlab.com/sgoggles>
+ *
+ */
+
+package com.tomshley.magicroot.sbt.projectsettings.keys
+
+import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
+import sbt.Keys.*
+import sbt.{ Def, * }
+
+protected[projectsettings] trait TomshleyCIBuildVersionPluginKeys
+    extends BasicSbtSettingsKeys
+    with VersionFilePluginKeys {
+  val tomshleyCIBuildVersionQualifier: SettingKey[String] =
+    settingKey[String]("Tomshley CI version qualifier appended to baseVersion (read from TOMSHLEY_CICD_BUILD_REVISION)")
+
+  lazy val tomshleyCIBuildVersionSettings: Seq[Def.Setting[String]] = Seq(
+    tomshleyCIBuildVersionQualifier := {
+      sys.env.getOrElse("TOMSHLEY_CICD_BUILD_REVISION", "")
+    },
+    version := {
+      val base = baseVersion.value
+      val qualifier = tomshleyCIBuildVersionQualifier.value
+      if (qualifier.nonEmpty) s"$base-$qualifier"
+      else base
+    }
+  )
+}
