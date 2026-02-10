@@ -23,18 +23,21 @@ import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.Keys.*
 import sbt.{ Def, * }
 
-protected[projectsettings] trait VersionFilePluginKeys extends BasicSbtSettingsKeys {
-  val baseVersion: SettingKey[String] = settingKey[String]("Base version read from the VERSION file")
+protected[projectsettings] trait TomshleyCIBuildVersionPluginKeys
+    extends BasicSbtSettingsKeys
+    with VersionFilePluginKeys {
+  val tomshleyCIBuildVersionQualifier: SettingKey[String] =
+    settingKey[String]("Tomshley CI version qualifier appended to baseVersion (read from TOMSHLEY_CICD_BUILD_REVISION)")
 
-  /** @deprecated Use TomshleyCIBuildVersionPlugin instead. Since 1.3.3. */
-  lazy val versionFileSettings: Seq[Def.Setting[String]] = Seq(
-    baseVersion := {
-      val versionFile = (ThisBuild / baseDirectory).value / "VERSION"
-      val versionFileContents: Seq[String] =
-        if (versionFile.exists()) IO.readLines(versionFile)
-        else Seq("0.0.0")
-      versionFileContents.filter(s => !s.isBlank).mkString("-").trim.stripPrefix("v")
+  lazy val tomshleyCIBuildVersionSettings: Seq[Def.Setting[String]] = Seq(
+    tomshleyCIBuildVersionQualifier := {
+      sys.env.getOrElse("TOMSHLEY_CICD_BUILD_REVISION", "")
     },
-    version := baseVersion.value
+    version := {
+      val base = baseVersion.value
+      val qualifier = tomshleyCIBuildVersionQualifier.value
+      if (qualifier.nonEmpty) s"$base-$qualifier"
+      else base
+    }
   )
 }

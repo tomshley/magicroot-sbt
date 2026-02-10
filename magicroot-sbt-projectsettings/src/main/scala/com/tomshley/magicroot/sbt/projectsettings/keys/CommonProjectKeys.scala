@@ -27,9 +27,10 @@ import sbt.url
 protected[projectsettings] trait CommonProjectKeys extends BasicSbtSettingsKeys {
   lazy val baseSettings3: sbt.Def.SettingsDefinition = Seq(
     licenses := {
+      val v = version.value
       val tagOrBranch =
-        if (version.value.endsWith("SNAPSHOT")) "main"
-        else "v" + version.value
+        if (v.endsWith("SNAPSHOT") || v.contains("-develop") || v.contains("-feature") || v.contains("-hotfix") || v.contains("-rc")) "main"
+        else "v" + v
       Seq(
         (
           "APACHE-2.0",
