@@ -149,6 +149,33 @@ object LibProjectPekkoKafkaPlugin extends AutoPlugin {
       ProjectSettingsDefs.pekkoKafkaProject
 }
 
+/** LibProjectPekkoFullPlugin — standalone Pekko library plugin that does not
+  * require BaseProjectSettingsPlugin, so it works in sub-project layouts.
+  * Bundles: baseSettings3, javaProject, jsonProject, libProject,
+  * pekkoProject, pekkoPersistenceProject, pekkoProjectionProject,
+  * pekkoKafkaProject.
+  */
+object LibProjectPekkoFullPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+
+  override val requires: Plugins = plugins.JvmPlugin
+
+  object autoImport extends CommonProjectKeys
+
+  import autoImport.*
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      baseSettings3 ++
+      ProjectSettingsDefs.javaProject ++
+      ProjectSettingsDefs.jsonProject ++
+      ProjectSettingsDefs.libProject ++
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoPersistenceProject ++
+      ProjectSettingsDefs.pekkoProjectionProject ++
+      ProjectSettingsDefs.pekkoKafkaProject
+}
+
 object LibManagedProjectPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings
