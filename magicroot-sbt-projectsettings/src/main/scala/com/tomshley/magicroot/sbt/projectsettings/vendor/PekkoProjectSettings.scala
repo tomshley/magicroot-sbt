@@ -11,7 +11,7 @@ object PekkoProjectSettings {
     val KafkaStreamsVersion = "5.2.1"
     val KafkaAvroVersion = "6.2.0"
     val Avro4sVersion = "5.0.13"
-    val LogbackVersion = "1.5.6"
+    val LogbackVersion = "1.5.13"
     val Json4sVersion = "4.0.7"
     val TestContainers = "1.20.0"
     val ScalaTest = "3.2.19"
