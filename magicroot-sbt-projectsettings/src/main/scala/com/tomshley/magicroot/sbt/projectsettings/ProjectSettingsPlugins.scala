@@ -25,7 +25,7 @@ import com.typesafe.sbt.packager.Keys.dockerAliases
 import com.typesafe.sbt.packager.archetypes.JavaAppPackaging
 import com.typesafe.sbt.packager.docker.DockerPlugin
 import com.typesafe.sbt.packager.docker.DockerPlugin.autoImport.Docker
-import com.typesafe.sbt.web.SbtWeb
+import com.tomshley.magicroot.sbt.projectsettings.vendor.PekkoProjectSettings
 import org.apache.pekko.grpc.sbt.PekkoGrpcPlugin
 import play.twirl.sbt.SbtTwirl
 import sbt.*
@@ -273,13 +273,18 @@ object EdgeProjectPlugin extends AutoPlugin {
     super.projectSettings ++ ProjectSettingsDefs.globalRunSettings
 }
 
-object EdgeWebPlugin extends AutoPlugin {
-  override def requires: Plugins = SbtWeb
+// =============================================================================
+// Basic Logging Plugin
+// =============================================================================
 
-  override def trigger: PluginTrigger = AllRequirements
+/** BasicLoggingPlugin - provides logback-classic for runtime logging */
+object BasicLoggingPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = plugins.JvmPlugin
 
-  object autoImport extends WebPluginKeys
-
+  override def projectSettings: Seq[Def.Setting[?]] = Seq(
+    Keys.libraryDependencies ++= PekkoProjectSettings.Libraries.basicLoggingLibraries
+  )
 }
 
 // =============================================================================
@@ -289,6 +294,7 @@ object EdgeWebPlugin extends AutoPlugin {
 /** EdgeIngestProjectPlugin - TCP + gRPC + EventSourced + Kafka (no Twirl) */
 object EdgeIngestProjectPlugin extends AutoPlugin {
   override val requires: Plugins = DockerPublishPlugin &&
+    BasicLoggingPlugin &&
     PekkoGrpcPlugin &&
     LibProjectPekkoPlugin &&
     LibProjectPekkoPersistencePlugin &&
@@ -310,7 +316,7 @@ object GitLabSourceDependencyPlugin extends AutoPlugin {
   override val requires: Plugins = plugins.JvmPlugin
 
   object autoImport {
-    val gitlabCredentials = settingKey[Map[Int, File]](
+    val magicRootGitlabCredentials = settingKey[Map[Int, File]](
       "GitLab project ID to credential file mapping"
     )
   }
@@ -318,11 +324,11 @@ object GitLabSourceDependencyPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
-    gitlabCredentials := Map.empty,
-    Keys.resolvers ++= gitlabCredentials.value.keys.toSeq.map(id =>
+    magicRootGitlabCredentials := Map.empty,
+    Keys.resolvers ++= magicRootGitlabCredentials.value.keys.toSeq.map(id =>
       s"GitLab-$id" at s"https://gitlab.com/api/v4/projects/$id/packages/maven"
     ),
-    Keys.credentials ++= gitlabCredentials.value.values.toSeq
+    Keys.credentials ++= magicRootGitlabCredentials.value.values.toSeq
       .distinct
       .filter(_.exists())
       .map(Credentials(_))
@@ -335,7 +341,7 @@ object AcceptanceTestPlugin extends AutoPlugin {
   override val requires: Plugins = plugins.JvmPlugin
 
   object autoImport {
-    val acceptanceFeaturesDependency = settingKey[Option[ModuleID]](
+    val magicRootAcceptanceFeaturesDependency = settingKey[Option[ModuleID]](
       "Optional dependency containing .feature files"
     )
   }
@@ -343,14 +349,7 @@ object AcceptanceTestPlugin extends AutoPlugin {
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
-    acceptanceFeaturesDependency := None,
-    Keys.libraryDependencies ++= acceptanceFeaturesDependency.value.toSeq.map(_ % Test),
-    Keys.libraryDependencies ++= Seq(
-      "io.cucumber" % "cucumber-core" % "7.18.1" % Test,
-      "io.cucumber" %% "cucumber-scala" % "8.23.1" % Test,
-      "io.cucumber" % "cucumber-junit" % "7.18.1" % Test,
-      "com.microsoft.playwright" % "playwright" % "1.41.0" % Test,
-      "io.qameta.allure" % "allure-cucumber7-jvm" % "2.25.0" % Test
-    )
-  )
+    magicRootAcceptanceFeaturesDependency := None,
+    Keys.libraryDependencies ++= magicRootAcceptanceFeaturesDependency.value.toSeq.map(_ % Test),
+  ) ++ ProjectSettingsDefs.acceptanceTestProject
 }
