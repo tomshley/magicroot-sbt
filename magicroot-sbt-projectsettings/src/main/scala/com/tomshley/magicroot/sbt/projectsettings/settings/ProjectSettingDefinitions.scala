@@ -40,6 +40,11 @@ sealed trait ProjectSettingsVersions {
   lazy val apacheCommonsDigester = "3.2"
   lazy val scalaTestVersion = "3.2.15"
   lazy val json4sVersion = "4.1.0-M3"
+  lazy val cucumberVersion = "7.18.1"
+  lazy val cucumberScalaVersion = "8.23.1"
+  lazy val allureCucumberVersion = "2.25.0"
+  lazy val playwrightVersion = "1.41.0"
+  lazy val junitInterfaceVersion = "0.13.3"
   val Scala212: String = "2.12.18"
   val Scala3 = "3.4.2"
   val Scala213 = "2.13.14"
@@ -143,6 +148,17 @@ protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVer
       "com.github.nscala-time" %% "nscala-time" % "2.32.0",
       "com.typesafe" % "config" % "1.4.2",
       "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
+    )
+  )
+  lazy val acceptanceTestProject: Seq[Def.Setting[?]] = Seq(
+    testFrameworks += new TestFramework("com.novocode.junit.JUnitFramework"),
+    libraryDependencies ++= Seq(
+      "io.cucumber" % "cucumber-core" % cucumberVersion % Test,
+      "io.cucumber" %% "cucumber-scala" % cucumberScalaVersion % Test,
+      "io.cucumber" % "cucumber-junit" % cucumberVersion % Test,
+      "com.github.sbt" % "junit-interface" % junitInterfaceVersion % Test,
+      "com.microsoft.playwright" % "playwright" % playwrightVersion % Test,
+      "io.qameta.allure" % "allure-cucumber7-jvm" % allureCucumberVersion % Test,
     )
   )
   lazy val unmanagedProject: Seq[Def.Setting[?]] = Seq(
