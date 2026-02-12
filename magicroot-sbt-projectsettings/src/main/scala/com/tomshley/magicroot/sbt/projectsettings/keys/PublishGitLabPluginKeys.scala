@@ -49,15 +49,15 @@ sealed trait GitLabCredentials {
 protected[projectsettings] trait PublishGitLabPluginKeys
     extends BasicSbtSettingsKeys
     with GitLabCredentials {
-  val publishGitLabProjectId: SettingKey[Int] = settingKey[Int]("Project Id of the gitlab project")
+  val magicRootPublishGitLabProjectId: SettingKey[Int] = settingKey[Int]("Project Id of the gitlab project")
 
   lazy val publishSettings: Seq[
     Def.Setting[? >: Seq[Resolver] & Task[Seq[Credentials]] & Task[Option[Resolver]] <: Equals]
   ] = Seq(
-    ThisBuild / resolvers ++= gitLabPublishAdditionalResolvers(publishGitLabProjectId.value),
+    ThisBuild / resolvers ++= gitLabPublishAdditionalResolvers(magicRootPublishGitLabProjectId.value),
     ThisBuild / credentials += gitLabPublishCredentials(
       Some((ThisBuild / baseDirectory).value / ".credentials.gitlab")
     ),
-    ThisBuild / publishTo := gitLabPublishTo(publishGitLabProjectId.value),
+    ThisBuild / publishTo := gitLabPublishTo(magicRootPublishGitLabProjectId.value),
   )
 }
