@@ -310,22 +310,29 @@ object EdgeIngestProjectPlugin extends AutoPlugin {
 // Utility Plugins
 // =============================================================================
 
-/** GitLabSourceDependencyPlugin - manages GitLab Maven credentials for source dependencies */
+/** GitLabSourceDependencyPlugin - manages GitLab Maven resolvers and credentials for source dependencies */
 object GitLabSourceDependencyPlugin extends AutoPlugin {
   override val trigger: PluginTrigger = noTrigger
   override val requires: Plugins = plugins.JvmPlugin
 
   object autoImport {
+    val magicRootGitlabPublicResolvers = settingKey[Set[Int]](
+      "GitLab project IDs for public Package Registries (resolver only, no credentials)"
+    )
     val magicRootGitlabCredentials = settingKey[Map[Int, File]](
-      "GitLab project ID to credential file mapping"
+      "GitLab project ID to credential file mapping for private Package Registries"
     )
   }
 
   import autoImport._
 
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
+    magicRootGitlabPublicResolvers := Set.empty,
     magicRootGitlabCredentials := Map.empty,
-    Keys.resolvers ++= magicRootGitlabCredentials.value.keys.toSeq.map(id =>
+    Keys.resolvers ++= (
+      magicRootGitlabPublicResolvers.value.toSeq ++
+      magicRootGitlabCredentials.value.keys.toSeq
+    ).distinct.sorted.map(id =>
       s"GitLab-$id" at s"https://gitlab.com/api/v4/projects/$id/packages/maven"
     ),
     Keys.credentials ++= magicRootGitlabCredentials.value.values.toSeq
@@ -352,4 +359,17 @@ object AcceptanceTestPlugin extends AutoPlugin {
     magicRootAcceptanceFeaturesDependency := None,
     Keys.libraryDependencies ++= magicRootAcceptanceFeaturesDependency.value.toSeq.map(_ % Test),
   ) ++ ProjectSettingsDefs.acceptanceTestProject
+}
+
+/** AcceptanceFeaturesPackagingPlugin - packages .feature files into the project JAR */
+object AcceptanceFeaturesPackagingPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = plugins.JvmPlugin
+
+  object autoImport extends AcceptanceFeaturesPackagingPluginKeys
+
+  import autoImport.*
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ magicRootFeaturesPackagingSettings
 }
