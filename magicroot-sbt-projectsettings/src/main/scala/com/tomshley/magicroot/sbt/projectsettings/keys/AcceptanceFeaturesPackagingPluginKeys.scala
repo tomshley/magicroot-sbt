@@ -30,6 +30,32 @@ protected[projectsettings] trait AcceptanceFeaturesPackagingPluginKeys extends B
   val magicRootVerifyFeaturesJar: TaskKey[Unit] =
     taskKey[Unit]("Verify JAR contains expected feature files at correct paths")
 
+  val magicRootVerifyFeaturesOnPackage: SettingKey[Boolean] =
+    settingKey[Boolean]("If true, verify packaged .feature files on every packageBin run (currently unused - use magicRootVerifyFeaturesJar for manual verification)")
+
+  private def verifyJarFeatures(jar: File, featuresDir: File, log: sbt.util.Logger): Unit = {
+    val expected = (featuresDir ** "*.feature").get.map { f =>
+      "features/" + featuresDir.toPath.relativize(f.toPath).toString.replace('\\', '/')
+    }.toSet
+    val entries = {
+      val zf = new java.util.zip.ZipFile(jar)
+      try {
+        import scala.jdk.CollectionConverters.*
+        zf.entries.asScala.map(_.getName).filter(_.endsWith(".feature")).toSet
+      } finally zf.close()
+    }
+    val missing = expected -- entries
+    val unexpected = entries -- expected
+    if (missing.nonEmpty || unexpected.nonEmpty) {
+      sys.error(
+        s"JAR feature verification failed!\n" +
+          s"  Missing: ${missing.mkString(", ")}\n" +
+          s"  Unexpected: ${unexpected.mkString(", ")}"
+      )
+    }
+    log.info(s"JAR verified: ${entries.size} feature files at correct paths")
+  }
+
   private def findFeaturesDir(dir: File): Option[File] = {
     val candidate = dir / "features"
     if (candidate.exists() && candidate.isDirectory) Some(candidate)
@@ -37,6 +63,7 @@ protected[projectsettings] trait AcceptanceFeaturesPackagingPluginKeys extends B
   }
 
   lazy val magicRootFeaturesPackagingSettings: Seq[Def.Setting[?]] = Seq(
+    magicRootVerifyFeaturesOnPackage := false,
     magicRootFeaturesRoot := {
       val projectBase = baseDirectory.value
       findFeaturesDir(projectBase).getOrElse {
@@ -78,6 +105,7 @@ protected[projectsettings] trait AcceptanceFeaturesPackagingPluginKeys extends B
           inputs.map { f =>
             val relative = featuresDir.toPath.relativize(f.toPath).toString.replace('\\', '/')
             val target = managedDir / relative
+            IO.createDirectory(target.getParentFile)
             IO.copyFile(f, target)
             target
           }
@@ -90,26 +118,7 @@ protected[projectsettings] trait AcceptanceFeaturesPackagingPluginKeys extends B
     magicRootVerifyFeaturesJar := {
       val jar = (Compile / packageBin).value
       val featuresDir = magicRootFeaturesRoot.value
-      val expected = (featuresDir ** "*.feature").get.map { f =>
-        "features/" + featuresDir.toPath.relativize(f.toPath).toString.replace('\\', '/')
-      }.toSet
-      val entries = {
-        val zf = new java.util.zip.ZipFile(jar)
-        try {
-          import scala.jdk.CollectionConverters.*
-          zf.entries.asScala.map(_.getName).filter(_.endsWith(".feature")).toSet
-        } finally zf.close()
-      }
-      val missing = expected -- entries
-      val unexpected = entries -- expected
-      if (missing.nonEmpty || unexpected.nonEmpty) {
-        sys.error(
-          s"JAR feature verification failed!\n" +
-            s"  Missing: ${missing.mkString(", ")}\n" +
-            s"  Unexpected: ${unexpected.mkString(", ")}"
-        )
-      }
-      streams.value.log.info(s"JAR verified: ${entries.size} feature files at correct paths")
+      verifyJarFeatures(jar, featuresDir, streams.value.log)
     },
   )
 }
