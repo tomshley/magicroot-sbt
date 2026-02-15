@@ -353,3 +353,16 @@ object AcceptanceTestPlugin extends AutoPlugin {
     Keys.libraryDependencies ++= magicRootAcceptanceFeaturesDependency.value.toSeq.map(_ % Test),
   ) ++ ProjectSettingsDefs.acceptanceTestProject
 }
+
+/** AcceptanceFeaturesPackagingPlugin - packages .feature files into the project JAR */
+object AcceptanceFeaturesPackagingPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+  override val requires: Plugins = plugins.JvmPlugin
+
+  object autoImport extends AcceptanceFeaturesPackagingPluginKeys
+
+  import autoImport.*
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++ magicRootFeaturesPackagingSettings
+}
