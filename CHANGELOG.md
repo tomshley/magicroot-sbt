@@ -6,6 +6,21 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.5] — 2026-02-15
+
+### Added
+- **GitLabSourceDependencyPlugin**: `magicRootGitlabPublicResolvers` setting for public Package Registries (resolver without credentials)
+
+### Changed
+- **GitLabSourceDependencyPlugin**: Resolver generation now combines public + private IDs with deterministic ordering (`.sorted`)
+- **AcceptanceFeaturesPackagingPluginKeys**: `magicRootVerifyFeaturesOnPackage` default set to `false` (automatic verification removed)
+- Extracted `verifyJarFeatures()` as private helper method to reduce duplication
+
+### Fixed
+- **Critical**: Removed circular task dependency in `Compile / packageBin` that prevented plugin loading
+- **Medium**: Fixed nondeterministic resolver ordering from `Set.toSeq` conversion
+- Manual verification via `magicRootVerifyFeaturesJar` task remains available
+
 ## [1.3.4] — 2026-02-12
 
 ### Added
