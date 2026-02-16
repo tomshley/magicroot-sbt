@@ -26,18 +26,9 @@ import sbt.{ Def, * }
 protected[projectsettings] trait TomshleyCIBuildVersionPluginKeys
     extends BasicSbtSettingsKeys
     with VersionFilePluginKeys {
-  val tomshleyCIBuildVersionQualifier: SettingKey[String] =
-    settingKey[String]("Tomshley CI version qualifier appended to magicRootBaseVersion (read from TOMSHLEY_CICD_BUILD_REVISION)")
-
   lazy val tomshleyCIBuildVersionSettings: Seq[Def.Setting[String]] = Seq(
-    tomshleyCIBuildVersionQualifier := {
-      sys.env.getOrElse("TOMSHLEY_CICD_BUILD_REVISION", "")
-    },
     version := {
-      val base = magicRootBaseVersion.value
-      val qualifier = tomshleyCIBuildVersionQualifier.value
-      if (qualifier.nonEmpty) s"$base-$qualifier"
-      else base
+      sys.env.getOrElse("TOMSHLEY_CICD_BUILD_VERSION", magicRootBaseVersion.value)
     }
   )
 }
