@@ -28,7 +28,9 @@ protected[projectsettings] trait TomshleyCIBuildVersionPluginKeys
     with VersionFilePluginKeys {
   lazy val tomshleyCIBuildVersionSettings: Seq[Def.Setting[String]] = Seq(
     version := {
-      sys.env.getOrElse("TOMSHLEY_CICD_BUILD_VERSION", magicRootBaseVersion.value)
+      val base = magicRootBaseVersion.value
+      val revision = sys.env.getOrElse("TOMSHLEY_CICD_BUILD_REVISION", "")
+      if (revision.nonEmpty) s"$base-$revision" else base
     }
   )
 }
