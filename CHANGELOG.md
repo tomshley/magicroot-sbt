@@ -6,6 +6,13 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.6] — 2026-02-15
+
+### Fixed
+- **TomshleyCIBuildVersionPlugin**: Now reads `TOMSHLEY_CICD_BUILD_VERSION` environment variable directly instead of composing version from `magicRootBaseVersion` + `TOMSHLEY_CICD_BUILD_REVISION` qualifier
+- Respects cicd-pipelines as canonical source for version strategy
+- Removed `tomshleyCIBuildVersionQualifier` SettingKey (no longer needed)
+
 ## [1.3.5] — 2026-02-15
 
 ### Added
