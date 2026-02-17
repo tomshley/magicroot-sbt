@@ -24,6 +24,7 @@ import sbt.Keys.*
 import sbt.{ Def, * }
 
 protected[projectsettings] trait VersionFilePluginKeys extends BasicSbtSettingsKeys {
+  // @see https://gitlab.com/tomshley/tomshley-oss-dependencies/-/tree/main/cicd-pipelines/common/specs/naming-conventions.yml
   val magicRootBaseVersion: SettingKey[String] = settingKey[String]("Base version read from the VERSION file")
 
   private def findVersionFile(dir: File): Option[File] = {
