@@ -212,19 +212,20 @@ object DockerPublishPlugin extends AutoPlugin {
   lazy val dockerBuildWithBuildx = taskKey[Unit]("Build docker images using buildx")
   lazy val dockerBuildxSettings = Seq(
     ensureDockerBuildx := {
-      if (Process("docker buildx inspect multi-arch-builder").! == 1) {
-        Process("docker buildx create --use --name multi-arch-builder", baseDirectory.value).!
-      }
+      Process("docker buildx use default").!
+      val rc = Process("docker buildx inspect default --bootstrap").!
+      require(rc == 0, s"Failed to bootstrap default buildx builder (exit code $rc)")
     },
     dockerBuildWithBuildx := {
       streams.value.log("Building and pushing image with Buildx")
-      dockerAliases.value.foreach(alias =>
-        Process(
+      dockerAliases.value.foreach { alias =>
+        val rc = Process(
           "docker buildx build --platform=linux/arm64,linux/amd64 --push -t " +
             alias + " .",
           baseDirectory.value / "target" / "docker" / "stage",
         ).!
-      )
+        require(rc == 0, s"Buildx build failed for $alias (exit code $rc)")
+      }
     },
     Docker / publish := Def
       .sequential(
