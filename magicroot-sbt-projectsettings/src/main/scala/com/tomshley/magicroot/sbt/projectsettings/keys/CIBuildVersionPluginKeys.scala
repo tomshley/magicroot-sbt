@@ -26,6 +26,7 @@ import sbt.{ Def, * }
 protected[projectsettings] trait TomshleyCIBuildVersionPluginKeys
     extends BasicSbtSettingsKeys
     with VersionFilePluginKeys {
+  // @see https://gitlab.com/tomshley/tomshley-oss-dependencies/-/tree/main/cicd-pipelines/common/adapter-specs/sbt/CIBuildVersionKeys.scala
   lazy val tomshleyCIBuildVersionSettings: Seq[Def.Setting[String]] = Seq(
     version := {
       val base = magicRootBaseVersion.value
