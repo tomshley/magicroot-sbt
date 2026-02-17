@@ -204,6 +204,12 @@ object DockerPublishPlugin extends AutoPlugin {
   override def requires = JavaAppPackaging &&
     DockerPlugin
 
+  object autoImport {
+    val dockerBuildxPlatforms = settingKey[Seq[String]]("Target platforms for docker buildx builds")
+  }
+
+  import autoImport._
+
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
       ProjectSettingsDefs.dockerPublishProject ++ dockerBuildxSettings
@@ -211,20 +217,47 @@ object DockerPublishPlugin extends AutoPlugin {
   lazy val ensureDockerBuildx = taskKey[Unit]("Ensure that docker buildx configuration exists")
   lazy val dockerBuildWithBuildx = taskKey[Unit]("Build docker images using buildx")
   lazy val dockerBuildxSettings = Seq(
+    dockerBuildxPlatforms := Seq("linux/amd64"),
     ensureDockerBuildx := {
       Process("docker buildx use default").!
       val rc = Process("docker buildx inspect default --bootstrap").!
       require(rc == 0, s"Failed to bootstrap default buildx builder (exit code $rc)")
     },
     dockerBuildWithBuildx := {
-      streams.value.log("Building and pushing image with Buildx")
-      dockerAliases.value.foreach { alias =>
-        val rc = Process(
-          "docker buildx build --platform=linux/arm64,linux/amd64 --push -t " +
-            alias + " .",
-          baseDirectory.value / "target" / "docker" / "stage",
-        ).!
-        require(rc == 0, s"Buildx build failed for $alias (exit code $rc)")
+      val platforms = dockerBuildxPlatforms.value
+      val stageDir = baseDirectory.value / "target" / "docker" / "stage"
+      val log = streams.value.log
+      log.info(s"Building and pushing image with Buildx for platforms: ${platforms.mkString(",")}")
+      if (platforms.size == 1) {
+        dockerAliases.value.foreach { alias =>
+          val rc = Process(
+            s"docker buildx build --platform=${platforms.head} --push -t " +
+              alias + " .",
+            stageDir,
+          ).!
+          require(rc == 0, s"Buildx build failed for $alias (exit code $rc)")
+        }
+      } else {
+        dockerAliases.value.foreach { alias =>
+          val platformTags = platforms.map { platform =>
+            val suffix = platform.replace("linux/", "").replace("/", "-")
+            val platTag = s"$alias-$suffix"
+            log.info(s"Building platform $platform as $platTag")
+            val rc = Process(
+              s"docker buildx build --platform=$platform --push -t $platTag .",
+              stageDir,
+            ).!
+            require(rc == 0, s"Buildx build failed for $platTag (exit code $rc)")
+            platTag
+          }
+          log.info(s"Creating manifest list for $alias")
+          val createRc = Process(
+            s"docker manifest create --amend $alias ${platformTags.mkString(" ")}"
+          ).!
+          require(createRc == 0, s"Manifest create failed for $alias (exit code $createRc)")
+          val pushRc = Process(s"docker manifest push $alias").!
+          require(pushRc == 0, s"Manifest push failed for $alias (exit code $pushRc)")
+        }
       }
     },
     Docker / publish := Def
