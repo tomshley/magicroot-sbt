@@ -122,6 +122,12 @@ protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVer
     resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers ++ PekkoProjectSettings.Resolvers.pekkoKafkaResolvers,
     libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoKafkaLibraries,
   )
+  lazy val pekkoMessagingProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
+    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoMessagingLibraries
+  )
+  lazy val pekkoStorageProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
+    libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoStorageLibraries
+  )
 
   lazy val jsonProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= Seq(
