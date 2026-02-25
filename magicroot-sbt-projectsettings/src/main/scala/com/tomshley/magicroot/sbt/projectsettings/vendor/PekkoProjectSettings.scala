@@ -15,6 +15,8 @@ object PekkoProjectSettings {
     val Json4sVersion = "4.0.7"
     val TestContainers = "1.20.0"
     val ScalaTest = "3.2.19"
+    val TwilioVersion = "10.6.3"
+    val AwsSdkVersion = "2.25.11"
   }
 
   object Resolvers {
@@ -73,6 +75,15 @@ object PekkoProjectSettings {
       "org.apache.pekko" %% "pekko-connectors-kafka" % PekkoProjectSettings.Versions.PekkoKafkaConnector,
       "org.apache.pekko" %% "pekko-connectors-kafka-cluster-sharding" % PekkoProjectSettings.Versions.PekkoKafkaConnector,
       "org.testcontainers" % "kafka" % PekkoProjectSettings.Versions.TestContainers % Test,
+    )
+
+    val pekkoMessagingLibraries: Seq[ModuleID] = Seq(
+      "com.twilio.sdk" % "twilio" % PekkoProjectSettings.Versions.TwilioVersion
+    )
+
+    val pekkoStorageLibraries: Seq[ModuleID] = Seq(
+      "software.amazon.awssdk" % "s3" % PekkoProjectSettings.Versions.AwsSdkVersion,
+      "software.amazon.awssdk" % "auth" % PekkoProjectSettings.Versions.AwsSdkVersion
     )
   }
 }
