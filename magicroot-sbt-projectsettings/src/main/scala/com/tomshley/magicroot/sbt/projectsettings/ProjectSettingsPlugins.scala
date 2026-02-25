@@ -161,6 +161,20 @@ object LibProjectPekkoKafkaPlugin extends AutoPlugin {
     super.projectSettings ++
       ProjectSettingsDefs.pekkoKafkaProject
 }
+object LibProjectPekkoMessagingPlugin extends AutoPlugin {
+  override val requires: Plugins = LibProjectPlugin
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoMessagingProject
+}
+object LibProjectPekkoStoragePlugin extends AutoPlugin {
+  override val requires: Plugins = LibProjectPlugin
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoStorageProject
+}
 
 /** LibProjectPekkoFullPlugin — standalone Pekko library plugin that does not
   * require BaseProjectSettingsPlugin, so it works in sub-project layouts.
@@ -227,11 +241,11 @@ object DockerPublishPlugin extends AutoPlugin {
       val platforms = dockerBuildxPlatforms.value
       val stageDir = baseDirectory.value / "target" / "docker" / "stage"
       val log = streams.value.log
-      log.info(s"Building and pushing image with Buildx for platforms: ${platforms.mkString(",")}")
+      log.info(s"Building image with Buildx for platforms: ${platforms.mkString(",")}")
       if (platforms.size == 1) {
         dockerAliases.value.foreach { alias =>
           val rc = Process(
-            s"docker buildx build --platform=${platforms.head} --push -t " +
+            s"docker buildx build --platform=${platforms.head} --load -t " +
               alias + " .",
             stageDir,
           ).!
