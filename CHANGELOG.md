@@ -44,6 +44,19 @@ This project follows Semantic Versioning.
 ### Removed
 - EdgeWebPlugin and WebPluginKeys (unused sbt-web legacy)
 
+## [1.3.11] — 2026-02-25
+
+### Added
+- **LibProjectPekkoMessagingPlugin** — standalone Pekko messaging plugin with Twilio SDK integration
+- **LibProjectPekkoStoragePlugin** — standalone Pekko storage plugin with AWS SDK integration
+- **PekkoProjectSettings.Libraries.pekkoMessagingLibraries** — Twilio SDK v10.6.3 dependency
+- **PekkoProjectSettings.Libraries.pekkoStorageLibraries** — AWS SDK v2.25.11 (S3 + Auth) dependencies
+- **ProjectSettingsDefs.pekkoMessagingProject** — messaging project settings
+- **ProjectSettingsDefs.pekkoStorageProject** — storage project settings
+
+### Changed
+- Added TwilioVersion (10.6.3) and AwsSdkVersion (2.25.11) to PekkoProjectSettings.Versions
+
 ## Unreleased
 
 - Initial OSS standardization (LICENSE, NOTICE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CHANGELOG, ROADMAP)

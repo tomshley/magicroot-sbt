@@ -161,6 +161,20 @@ object LibProjectPekkoKafkaPlugin extends AutoPlugin {
     super.projectSettings ++
       ProjectSettingsDefs.pekkoKafkaProject
 }
+object LibProjectPekkoMessagingPlugin extends AutoPlugin {
+  override val requires: Plugins = LibProjectPlugin
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoMessagingProject
+}
+object LibProjectPekkoStoragePlugin extends AutoPlugin {
+  override val requires: Plugins = LibProjectPlugin
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      ProjectSettingsDefs.pekkoProject ++
+      ProjectSettingsDefs.pekkoStorageProject
+}
 
 /** LibProjectPekkoFullPlugin — standalone Pekko library plugin that does not
   * require BaseProjectSettingsPlugin, so it works in sub-project layouts.
