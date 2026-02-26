@@ -17,6 +17,8 @@ object PekkoProjectSettings {
     val ScalaTest = "3.2.19"
     val TwilioVersion = "10.6.3"
     val AwsSdkVersion = "2.25.11"
+    val ScalaPBVersion = "0.11.15"
+    val ProtobufJavaVersion = "3.25.1"
   }
 
   object Resolvers {
@@ -84,6 +86,11 @@ object PekkoProjectSettings {
     val pekkoStorageLibraries: Seq[ModuleID] = Seq(
       "software.amazon.awssdk" % "s3" % PekkoProjectSettings.Versions.AwsSdkVersion,
       "software.amazon.awssdk" % "auth" % PekkoProjectSettings.Versions.AwsSdkVersion
+    )
+
+    val protobufLibraries: Seq[ModuleID] = Seq(
+      "com.thesamet.scalapb" %% "scalapb-runtime" % PekkoProjectSettings.Versions.ScalaPBVersion,
+      "com.google.protobuf" % "protobuf-java" % PekkoProjectSettings.Versions.ProtobufJavaVersion
     )
   }
 }

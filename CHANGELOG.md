@@ -44,6 +44,15 @@ This project follows Semantic Versioning.
 ### Removed
 - EdgeWebPlugin and WebPluginKeys (unused sbt-web legacy)
 
+## [1.3.12] — 2026-02-25
+
+### Added
+- **LibProjectProtobufPlugin** — standalone protobuf plugin with ScalaPB and protobuf-java dependencies
+- **PekkoProjectSettings.Libraries.protobufLibraries** — ScalaPB v0.11.15 and protobuf-java v3.25.1 dependencies
+- **ProjectSettingsDefs.protobufProject** — protobuf project settings
+- **PekkoProjectSettings.Versions.ScalaPBVersion** — 0.11.15 version constant
+- **PekkoProjectSettings.Versions.ProtobufJavaVersion** — 3.25.1 version constant
+
 ## [1.3.11] — 2026-02-25
 
 ### Added
