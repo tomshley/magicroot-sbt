@@ -55,6 +55,7 @@ object PekkoProjectSettings {
       "org.apache.pekko" %% "pekko-cluster-sharding-typed" % PekkoProjectSettings.Versions.PekkoVersion,
       "org.apache.pekko" %% "pekko-actor-testkit-typed" % PekkoProjectSettings.Versions.PekkoVersion % Test,
       "org.apache.pekko" %% "pekko-stream-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test,
+      "org.apache.pekko" %% "pekko-http-testkit" % PekkoProjectSettings.Versions.PekkoHttpVersion % Test,
     )
 
     val pekkoPersistenceLibraries: Seq[ModuleID] = Seq(
@@ -67,6 +68,7 @@ object PekkoProjectSettings {
       "org.apache.pekko" %% "pekko-projection-core" % PekkoProjectSettings.Versions.PekkoManagementVersion,
       "org.apache.pekko" %% "pekko-projection-r2dbc" % PekkoProjectSettings.Versions.PekkoManagementVersion,
       "org.apache.pekko" %% "pekko-projection-eventsourced" % PekkoProjectSettings.Versions.PekkoManagementVersion,
+      "org.apache.pekko" %% "pekko-projection-durable-state" % PekkoProjectSettings.Versions.PekkoManagementVersion,
       "org.apache.pekko" %% "pekko-persistence-query" % PekkoProjectSettings.Versions.PekkoVersion,
     )
 
