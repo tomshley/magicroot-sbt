@@ -128,6 +128,9 @@ protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVer
   lazy val pekkoStorageProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoStorageLibraries
   )
+  lazy val protobufProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
+    libraryDependencies ++= PekkoProjectSettings.Libraries.protobufLibraries
+  )
 
   lazy val jsonProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= Seq(
