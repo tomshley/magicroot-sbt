@@ -227,70 +227,63 @@ object DockerPublishPlugin extends AutoPlugin {
   object autoImport {
     val dockerBuildxPlatforms = settingKey[Seq[String]]("Target platforms for docker buildx builds")
     val dockerBuildxSkipPush = settingKey[Boolean]("Skip pushing images to registry (local build only)")
+    val ensureDockerBuildx = taskKey[Unit]("Ensure that docker buildx configuration exists")
+    val dockerBuildWithBuildx = taskKey[Unit]("Build docker images using buildx")
   }
 
-  import autoImport._
+  import autoImport.*
 
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings ++
       ProjectSettingsDefs.dockerPublishProject ++ dockerBuildxSettings
 
-  lazy val ensureDockerBuildx = taskKey[Unit]("Ensure that docker buildx configuration exists")
-  lazy val dockerBuildWithBuildx = taskKey[Unit]("Build docker images using buildx")
-  lazy val dockerBuildxSettings = Seq(
+  private lazy val dockerBuildxSettings: Seq[Def.Setting[?]] = Seq(
     dockerBuildxPlatforms := Seq("linux/amd64"),
     dockerBuildxSkipPush := false,
     ensureDockerBuildx := {
-      Process("docker buildx use default").!
-      val rc = Process("docker buildx inspect default --bootstrap").!
-      require(rc == 0, s"Failed to bootstrap default buildx builder (exit code $rc)")
+      val useRc = Process("docker buildx use default").!
+      require(useRc == 0, s"Failed to select default buildx builder (exit code $useRc)")
+      val inspectRc = Process("docker buildx inspect default --bootstrap").!
+      require(inspectRc == 0, s"Failed to bootstrap default buildx builder (exit code $inspectRc)")
     },
     dockerBuildWithBuildx := {
-      val platforms = dockerBuildxPlatforms.value
-      val skipPush = dockerBuildxSkipPush.value
-      val stageDir = baseDirectory.value / "target" / "docker" / "stage"
       val log = streams.value.log
-      log.info(s"Building image with Buildx for platforms: ${platforms.mkString(",")}")
-      if (skipPush) {
-        log.info("Push disabled (dockerBuildxSkipPush := true)")
-      }
-      if (platforms.size == 1) {
-        dockerAliases.value.foreach { alias =>
-          val rc = Process(
-            s"docker buildx build --platform=${platforms.head} --load -t " +
-              alias + " .",
-            stageDir,
-          ).!
-          require(rc == 0, s"Buildx build failed for $alias (exit code $rc)")
-          if (!skipPush) {
-            val pushRc = Process(s"docker push $alias").!
-            require(pushRc == 0, s"Docker push failed for $alias (exit code $pushRc)")
+      val stageDir = baseDirectory.value / "target" / "docker" / "stage"
+      val aliases = dockerAliases.value
+      val skipPush = dockerBuildxSkipPush.value
+
+      dockerBuildxPlatforms.value match {
+        case Seq(platform) =>
+          log.info(s"Building single-platform image for $platform")
+          aliases.foreach { alias =>
+            val buildRc = Process(s"docker buildx build --platform=$platform --load -t $alias .", stageDir).!
+            require(buildRc == 0, s"Buildx build failed for $alias (exit code $buildRc)")
+            if (skipPush) {
+              log.info(s"Skipping push for $alias (dockerBuildxSkipPush := true)")
+            } else {
+              val pushRc = Process(s"docker push $alias").!
+              require(pushRc == 0, s"Docker push failed for $alias (exit code $pushRc)")
+            }
           }
-        }
-      } else {
-        if (skipPush) {
-          log.warn("Multi-platform builds require push; ignoring dockerBuildxSkipPush")
-        }
-        dockerAliases.value.foreach { alias =>
-          val platformTags = platforms.map { platform =>
-            val suffix = platform.replace("linux/", "").replace("/", "-")
-            val platTag = s"$alias-$suffix"
-            log.info(s"Building platform $platform as $platTag")
-            val rc = Process(
-              s"docker buildx build --platform=$platform --push -t $platTag .",
-              stageDir,
-            ).!
-            require(rc == 0, s"Buildx build failed for $platTag (exit code $rc)")
-            platTag
+
+        case platforms =>
+          if (skipPush) log.warn("Multi-platform builds require --push; ignoring dockerBuildxSkipPush")
+          log.info(s"Building multi-platform image for ${platforms.mkString(", ")}")
+          aliases.foreach { alias =>
+            val platformTags = platforms.map { platform =>
+              val suffix = platform.replace("linux/", "").replace("/", "-")
+              val platTag = s"$alias-$suffix"
+              log.info(s"Building $platform as $platTag")
+              val buildRc = Process(s"docker buildx build --platform=$platform --push -t $platTag .", stageDir).!
+              require(buildRc == 0, s"Buildx build failed for $platTag (exit code $buildRc)")
+              platTag
+            }
+            log.info(s"Creating manifest list for $alias")
+            val createRc = Process(s"docker manifest create --amend $alias ${platformTags.mkString(" ")}").!
+            require(createRc == 0, s"Manifest create failed for $alias (exit code $createRc)")
+            val pushRc = Process(s"docker manifest push $alias").!
+            require(pushRc == 0, s"Manifest push failed for $alias (exit code $pushRc)")
           }
-          log.info(s"Creating manifest list for $alias")
-          val createRc = Process(
-            s"docker manifest create --amend $alias ${platformTags.mkString(" ")}"
-          ).!
-          require(createRc == 0, s"Manifest create failed for $alias (exit code $createRc)")
-          val pushRc = Process(s"docker manifest push $alias").!
-          require(pushRc == 0, s"Manifest push failed for $alias (exit code $pushRc)")
-        }
       }
     },
     Docker / publish := Def
