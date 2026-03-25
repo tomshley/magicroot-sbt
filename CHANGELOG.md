@@ -6,6 +6,13 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.17] — 2026-03-25
+
+### Changed
+- Version bump for release
+
+---
+
 ## [1.3.16] — 2026-03-25
 
 ### Fixed
