@@ -8,8 +8,8 @@ This project follows Semantic Versioning.
 
 ## [1.3.17] — 2026-03-25
 
-### Changed
-- Version bump for release
+### Fixed
+- **IRSA Support**: Added `software.amazon.awssdk:sts` to `pekkoStorageLibraries` for IAM Roles for Service Accounts support
 
 ---
 
