@@ -226,6 +226,7 @@ object DockerPublishPlugin extends AutoPlugin {
 
   object autoImport {
     val dockerBuildxPlatforms = settingKey[Seq[String]]("Target platforms for docker buildx builds")
+    val dockerBuildxSkipPush = settingKey[Boolean]("Skip pushing images to registry (local build only)")
   }
 
   import autoImport._
@@ -238,6 +239,7 @@ object DockerPublishPlugin extends AutoPlugin {
   lazy val dockerBuildWithBuildx = taskKey[Unit]("Build docker images using buildx")
   lazy val dockerBuildxSettings = Seq(
     dockerBuildxPlatforms := Seq("linux/amd64"),
+    dockerBuildxSkipPush := false,
     ensureDockerBuildx := {
       Process("docker buildx use default").!
       val rc = Process("docker buildx inspect default --bootstrap").!
@@ -245,9 +247,13 @@ object DockerPublishPlugin extends AutoPlugin {
     },
     dockerBuildWithBuildx := {
       val platforms = dockerBuildxPlatforms.value
+      val skipPush = dockerBuildxSkipPush.value
       val stageDir = baseDirectory.value / "target" / "docker" / "stage"
       val log = streams.value.log
       log.info(s"Building image with Buildx for platforms: ${platforms.mkString(",")}")
+      if (skipPush) {
+        log.info("Push disabled (dockerBuildxSkipPush := true)")
+      }
       if (platforms.size == 1) {
         dockerAliases.value.foreach { alias =>
           val rc = Process(
@@ -256,8 +262,15 @@ object DockerPublishPlugin extends AutoPlugin {
             stageDir,
           ).!
           require(rc == 0, s"Buildx build failed for $alias (exit code $rc)")
+          if (!skipPush) {
+            val pushRc = Process(s"docker push $alias").!
+            require(pushRc == 0, s"Docker push failed for $alias (exit code $pushRc)")
+          }
         }
       } else {
+        if (skipPush) {
+          log.warn("Multi-platform builds require push; ignoring dockerBuildxSkipPush")
+        }
         dockerAliases.value.foreach { alias =>
           val platformTags = platforms.map { platform =>
             val suffix = platform.replace("linux/", "").replace("/", "-")
