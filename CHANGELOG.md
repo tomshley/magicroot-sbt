@@ -6,6 +6,25 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.16] — 2026-03-25
+
+### Fixed
+- **DockerPublishPlugin**: Single-platform builds now push images to registry after `--load` (previously only loaded locally)
+- **DockerPublishPlugin**: Added `dockerBuildxSkipPush` setting for local-only builds (opt-in via `true`)
+
+### Changed
+- **DockerPublishPlugin**: Refactored to idiomatic sbt conventions
+  - All task keys moved to `autoImport` (standard sbt plugin canon)
+  - Use Scala 3 wildcard import consistently
+  - Replace Java-style size check with pattern match destructuring
+  - Use single string interpolation throughout
+  - Add exit code validation for `docker buildx use` command
+  - Make `dockerBuildxSettings` private with explicit type
+  - Extract `dockerAliases.value` to avoid double evaluation
+  - Remove disconnected `skipPush` logging; each branch logs contextually
+
+---
+
 ## [1.3.6] — 2026-02-15
 
 ### Fixed
