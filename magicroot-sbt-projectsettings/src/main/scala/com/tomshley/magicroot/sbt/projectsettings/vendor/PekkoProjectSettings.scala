@@ -87,7 +87,8 @@ object PekkoProjectSettings {
 
     val pekkoStorageLibraries: Seq[ModuleID] = Seq(
       "software.amazon.awssdk" % "s3" % PekkoProjectSettings.Versions.AwsSdkVersion,
-      "software.amazon.awssdk" % "auth" % PekkoProjectSettings.Versions.AwsSdkVersion
+      "software.amazon.awssdk" % "auth" % PekkoProjectSettings.Versions.AwsSdkVersion,
+      "software.amazon.awssdk" % "sts" % PekkoProjectSettings.Versions.AwsSdkVersion
     )
 
     val protobufLibraries: Seq[ModuleID] = Seq(
