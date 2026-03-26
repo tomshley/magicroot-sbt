@@ -6,6 +6,15 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.18] — 2026-03-26
+
+### Fixed
+- **DockerPublishPlugin**: `dockerUpdateLatest` now only creates `latest` tag for local builds or Git tag pipelines
+  - Branch/release/hotfix pipelines no longer publish plain `latest` Docker tag
+  - Local `publishLocal` and tag pipelines still create `latest` for ergonomics and production deployment
+
+---
+
 ## [1.3.17] — 2026-03-25
 
 ### Fixed
