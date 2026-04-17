@@ -6,6 +6,17 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.21] — 2026-04-17
+
+### Fixed
+- **GitLabSourceDependencyPlugin**: Restored exclusive env-var credential guard — when
+  `CI_JOB_TOKEN` is present, file-based credentials are skipped. The 1.3.20 change to
+  prepend env creds alongside file creds caused Coursier to send the wrong credential
+  when resolving cross-project packages, resulting in GitLab returning 404 for published
+  artifacts (e.g. `ami-platform-schemas_3`).
+
+---
+
 ## [1.3.20] — 2026-04-17
 
 ### Changed
