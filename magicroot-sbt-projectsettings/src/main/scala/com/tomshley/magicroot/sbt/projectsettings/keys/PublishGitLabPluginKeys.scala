@@ -23,15 +23,19 @@ import com.tomshley.magicroot.sbt.common.BasicSbtSettingsKeys
 import sbt.Keys.*
 import sbt.{ Def, * }
 sealed trait GitLabCredentials {
+  private val defaultEnvCredential = GitLabEnvCredential(
+    "GitLab Packages Registry", "gitlab.com", "gitlab-ci-token", "CI_JOB_TOKEN"
+  )
+
   def gitLabPublishCredentials(credentialFileOption: Option[File]): Credentials =
     sys.env
-      .get("CI_JOB_TOKEN")
-      .map(
+      .get(defaultEnvCredential.passwordEnvVar)
+      .map(pw =>
         Credentials(
-          "GitLab Packages Registry",
-          "gitlab.com",
-          "gitlab-ci-token",
-          _,
+          defaultEnvCredential.realm,
+          defaultEnvCredential.host,
+          defaultEnvCredential.user,
+          pw,
         )
       )
       .getOrElse(Credentials(credentialFileOption.getOrElse(file(".credentials.gitlab"))))
