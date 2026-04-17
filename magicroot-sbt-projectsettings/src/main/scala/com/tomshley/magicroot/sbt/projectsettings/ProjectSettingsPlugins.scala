@@ -382,6 +382,9 @@ object GitLabSourceDependencyPlugin extends AutoPlugin {
     val magicRootGitlabCredentials = settingKey[Map[Int, File]](
       "GitLab project ID to credential file mapping for private Package Registries"
     )
+    val magicRootGitlabCredentialEnvOverride = settingKey[Option[GitLabEnvCredential]](
+      "Optional env-var credential that overrides file-based credentials when the env var is set"
+    )
   }
 
   import autoImport._
@@ -389,16 +392,27 @@ object GitLabSourceDependencyPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[?]] = Seq(
     magicRootGitlabPublicResolvers := Set.empty,
     magicRootGitlabCredentials := Map.empty,
+    magicRootGitlabCredentialEnvOverride := None,
     Keys.resolvers ++= (
       magicRootGitlabPublicResolvers.value.toSeq ++
       magicRootGitlabCredentials.value.keys.toSeq
     ).distinct.sorted.map(id =>
       s"GitLab-$id" at s"https://gitlab.com/api/v4/projects/$id/packages/maven"
     ),
-    Keys.credentials ++= magicRootGitlabCredentials.value.values.toSeq
-      .distinct
-      .filter(_.exists())
-      .map(Credentials(_))
+    Keys.credentials ++= {
+      val envCred = magicRootGitlabCredentialEnvOverride.value.flatMap { ec =>
+        sys.env.get(ec.passwordEnvVar).map(pw =>
+          Credentials(ec.realm, ec.host, ec.user, pw)
+        )
+      }
+      envCred.toSeq ++ (
+        if (envCred.isDefined) Seq.empty
+        else magicRootGitlabCredentials.value.values.toSeq
+          .distinct
+          .filter(_.exists())
+          .map(Credentials(_))
+      )
+    }
   )
 }
 
