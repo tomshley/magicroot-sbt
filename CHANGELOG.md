@@ -6,6 +6,17 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.19] — 2026-04-17
+
+### Added
+- **GitLabSourceDependencyPlugin**: `magicRootGitlabCredentialEnvOverride` setting accepts a
+  `GitLabEnvCredential(realm, host, user, passwordEnvVar)` for env-var-based authentication.
+  When the env var is present (e.g. `CI_JOB_TOKEN` in CI), it constructs credentials inline
+  and skips file-based credentials, avoiding realm+host collisions with publish-only tokens.
+  Falls through to `magicRootGitlabCredentials` file mapping when the env var is absent.
+
+---
+
 ## [1.3.18] — 2026-03-26
 
 ### Fixed
