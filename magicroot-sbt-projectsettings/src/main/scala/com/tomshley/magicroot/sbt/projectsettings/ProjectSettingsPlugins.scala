@@ -405,13 +405,10 @@ object GitLabSourceDependencyPlugin extends AutoPlugin {
           Credentials(ec.realm, ec.host, ec.user, pw)
         )
       }
-      envCred.toSeq ++ (
-        if (envCred.isDefined) Seq.empty
-        else magicRootGitlabCredentials.value.values.toSeq
-          .distinct
-          .filter(_.exists())
-          .map(Credentials(_))
-      )
+      envCred.toSeq ++ magicRootGitlabCredentials.value.values.toSeq
+        .distinct
+        .filter(_.exists())
+        .map(Credentials(_))
     }
   )
 }

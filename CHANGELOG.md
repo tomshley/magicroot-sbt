@@ -6,6 +6,19 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.20] — 2026-04-17
+
+### Changed
+- **GitLabSourceDependencyPlugin**: Env-var credential is now prepended before file-based
+  credentials instead of replacing them. SBT matches the first credential by realm+host,
+  so the env credential takes priority while file credentials for other realms/hosts are
+  preserved.
+- **PublishGitLabPlugin**: `gitLabPublishCredentials` now uses `GitLabEnvCredential` internally
+  instead of hardcoded `CI_JOB_TOKEN` / realm / host strings, consistent with
+  `GitLabSourceDependencyPlugin`'s env-var credential pattern.
+
+---
+
 ## [1.3.19] — 2026-04-17
 
 ### Added
