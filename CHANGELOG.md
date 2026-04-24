@@ -6,6 +6,22 @@ This project follows Semantic Versioning.
 
 ---
 
+## [2.0.1] — 2026-04-23
+
+### Fixed
+- **PekkoProjectSettings** — `pekko-projection-*` and `pekko-persistence-r2dbc`
+  incorrectly shared `PekkoManagementVersion` in 2.0.0. Bumping management to
+  `1.2.1` broke resolution because those families only publish up to `1.1.0`
+  (Maven Central shows `1.0.0`, `1.1.0-M1`, `1.1.0` for both).
+  Introduced a separate `PekkoProjectionVersion = "1.1.0"` constant and
+  pointed `pekko-projection-core`, `pekko-projection-r2dbc`,
+  `pekko-projection-eventsourced`, `pekko-projection-durable-state`, and
+  `pekko-persistence-r2dbc` at it. `pekko-management-*` artifacts continue
+  to use `PekkoManagementVersion` (now correctly `1.2.1`). No other version
+  changes.
+
+---
+
 ## [2.0.0] — 2026-04-23
 
 Major version bump to signal the coordinated Pekko family upgrade
