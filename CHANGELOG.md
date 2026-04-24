@@ -6,7 +6,24 @@ This project follows Semantic Versioning.
 
 ---
 
-## [2.0.1] — 2026-04-23
+## [2.0.2] — 2026-04-23
+
+### Fixed
+- Republished `2.0.1` content under a new version — the original 2.0.1
+  upload to the GitLab Maven registry was interrupted mid-publish,
+  leaving an incomplete state where `magicroot-sbt-common_2.12_1.0-2.0.1.jar`
+  and `.pom` were missing (but `-sources.jar` / `-javadoc.jar` were
+  already uploaded). GitLab's package registry rejects overwrites of
+  existing artifacts, so the cleanest recovery is a version bump.
+  No code changes vs 2.0.1 — the `PekkoProjectionVersion` split is
+  carried forward unchanged.
+
+### Yanked
+- **2.0.1** — partial publish; do not consume. Superseded by 2.0.2.
+
+---
+
+## [2.0.1] — 2026-04-23 — YANKED (incomplete publish)
 
 ### Fixed
 - **PekkoProjectSettings** — `pekko-projection-*` and `pekko-persistence-r2dbc`
