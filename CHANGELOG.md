@@ -6,6 +6,71 @@ This project follows Semantic Versioning.
 
 ---
 
+## [2.0.0] — 2026-04-23
+
+Major version bump to signal the coordinated Pekko family upgrade
+(`1.1.x` → `1.5.x`) and the library/SDK refresh. No plugin-API, setting-key,
+or auto-import surface was renamed — the major bump is a downstream heads-up
+that runtime semantics of the vendored Pekko stack have moved forward.
+Downstream consumers should test in a non-production environment before
+promoting.
+
+### Changed
+
+`PekkoProjectSettings` (coordinated Pekko family — `1.1.x` → `1.5.x`,
+within the Pekko 1.x BC contract; skips the 1.2.0 `RecoverWith` operator
+regression fixed in 1.5.0 per upstream release notes):
+
+- `PekkoVersion`            `1.1.3`    → `1.5.0`
+- `PekkoHttpVersion`        `1.1.0`    → `1.3.0`
+- `PekkoManagementVersion`  `1.0.0`    → `1.2.1`
+- `PekkoKafkaConnector`     `1.1.0-M1` → `1.1.0` (milestone → GA; resolves
+  the `Transactional.flow` stall observed against cp-kafka 7.6 where the
+  producer-network thread went silent after `Discovered group coordinator`
+  and never issued `AddPartitionsToTxn`. Transitive `kafka-clients` becomes
+  `3.8.0`, replacing the Confluent-shipped `3.6.0-ccs`.)
+
+Library / SDK refresh:
+
+- `Avro4sVersion`          `5.0.13`  → `5.0.15`  (patch)
+- `LogbackVersion`         `1.5.13`  → `1.5.32`  (patch; CVE fixes)
+- `ScalaTest`              `3.2.19`  → `3.2.20`  (patch)
+- `TwilioVersion`          `10.6.3`  → `12.0.0`  (SMS API surface stable;
+  `Twilio.init`, `Message.creator().create*()`, `PhoneNumber` unchanged)
+- `AwsSdkVersion`          `2.25.11` → `2.42.39` (within 2.x major; S3-only
+  consumer usage remains API-compatible)
+- `ScalaPBVersion`         `0.11.15` → `0.11.20` (patch within 0.11.x)
+- `ProtobufJavaVersion`    `3.25.1`  → `3.25.5`  (patch within 3.25.x; 4.x
+  deliberately held — breaks ScalaPB 0.11.x runtime)
+
+### Deliberately held
+
+- `KafkaStreamsVersion` / `KafkaAvroVersion` — held at `7.6.0`. Confluent
+  Platform 8.x is based on Apache Kafka 4.0 (KIP-896) which removes pre-2.1
+  client protocol support; Confluent requires a staged 7.9 → 8.x migration
+  via the `DeprecatedRequestsPerSec` metric scan. Not reactive-hotfix
+  material.
+- `TestContainers` — held at `1.20.0`. The 2.x line relocates
+  `org.testcontainers.containers.KafkaContainer` →
+  `org.testcontainers.kafka.ConfluentKafkaContainer` (for cp-kafka images)
+  and renames every module artifact with a `testcontainers-` prefix.
+  Requires code changes in downstream Kafka test fixtures; should land as
+  its own migration.
+- `Json4sVersion` — `4.0.7` is the latest stable (`4.1.0-M8` is a
+  milestone).
+
+### Migration notes
+
+- Downstream projects bump `magicroot-sbt-projectsettings` to `2.0.0` in
+  `project/plugins.sbt`.
+- No source changes required — `PekkoProjectSettings.Versions` field names
+  are unchanged.
+- `AkkaProjectSettings` (legacy, untouched; still pins Confluent 6.2.0 /
+  Akka 2.9 / Alpakka Kafka 5.0) is unaffected by this release. No known
+  in-tree consumers.
+
+---
+
 ## [1.3.22] — 2026-04-23
 
 ### Changed
