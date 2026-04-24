@@ -8,8 +8,17 @@ object PekkoProjectSettings {
     val PekkoManagementVersion = "1.0.0"
     val PekkoKafkaConnector = "1.1.0-M1"
     val PekkoHttpVersion = "1.1.0"
-    val KafkaStreamsVersion = "5.2.1"
-    val KafkaAvroVersion = "6.2.0"
+    // Confluent Platform 7.6.0 bundles kafka-clients 3.6.0, which matches the
+    // confluentinc/cp-kafka:7.6.0 broker image used in AMI platform CI. The
+    // prior 6.2.0 pin pulled in kafka-clients 2.8.0, whose transactional
+    // producer protocol handshake hangs indefinitely against a 3.6 broker
+    // (observed in ami-platform-structuring-server TransferEventConsumerKafkaSpec
+    // E2E test: ProducerId set but the `Discovered transaction coordinator`
+    // loop never commits a record). Non-transactional SendProducer paths
+    // worked under 2.8 → 3.6 skew, which is why ami-platform-ingress-server
+    // tests stayed green.
+    val KafkaStreamsVersion = "7.6.0"
+    val KafkaAvroVersion = "7.6.0"
     val Avro4sVersion = "5.0.13"
     val LogbackVersion = "1.5.13"
     val Json4sVersion = "4.0.7"

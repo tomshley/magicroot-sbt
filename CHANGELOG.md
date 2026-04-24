@@ -6,6 +6,29 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.3.22] — 2026-04-23
+
+### Changed
+- **PekkoProjectSettings**: Bumped `KafkaAvroVersion` and `KafkaStreamsVersion`
+  from `6.2.0` to `7.6.0` (Confluent Platform). This aligns the transitive
+  `kafka-clients` artifact with the `confluentinc/cp-kafka:7.6.0` broker image
+  used in AMI platform CI (kafka-clients `2.8.0` → `3.6.0`). The prior 2.8-era
+  client's transactional producer protocol handshake hung indefinitely against
+  a 3.6 broker — `ProducerId set` succeeded but the subsequent `Discovered
+  transaction coordinator` retry loop never committed a record. Non-transactional
+  `SendProducer` paths worked under the 2.8 → 3.6 skew, which is why projects
+  without transactional producer tests stayed green.
+
+### Migration notes
+- Downstream projects should bump `magicroot-sbt-projectsettings` to `1.3.22`
+  in `project/plugins.sbt`.
+- No source changes required — API surface of `PekkoProjectSettings.Versions`
+  is unchanged.
+- `AkkaProjectSettings` (legacy, untouched at `6.2.0`) still pins the older
+  Confluent artifacts; consumers of `AkkaProjectSettings` will see no change.
+
+---
+
 ## [1.3.21] — 2026-04-17
 
 ### Fixed
