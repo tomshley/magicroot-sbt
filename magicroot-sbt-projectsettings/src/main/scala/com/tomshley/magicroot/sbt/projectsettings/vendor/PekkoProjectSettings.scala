@@ -44,6 +44,12 @@ object PekkoProjectSettings {
     // (ScalaPB 1.0.0 is alpha). Pekko 1.5 internally ships protobuf-java 4.33.5 but
     // that copy is shaded; user classpath stays on 3.25.x.
     val ProtobufJavaVersion = "3.25.5"
+    // pekko-persistence-r2dbc 1.1.0 demoted r2dbc-postgresql to <scope>test</scope>
+    // (was compile in 1.0.0), so downstream projects no longer get the driver
+    // transitively. Pin explicitly here so anyone consuming `pekkoPersistenceLibraries`
+    // or `pekkoProjectionLibraries` still has a working Postgres driver at runtime.
+    // 1.0.7.RELEASE is the version that pekko-persistence-r2dbc 1.1.0's POM references.
+    val R2dbcPostgresqlVersion = "1.0.7.RELEASE"
   }
 
   object Resolvers {
@@ -87,6 +93,9 @@ object PekkoProjectSettings {
       "org.apache.pekko" %% "pekko-persistence-r2dbc" % PekkoProjectSettings.Versions.PekkoProjectionVersion,
       "org.apache.pekko" %% "pekko-persistence-typed" % PekkoProjectSettings.Versions.PekkoVersion,
       "org.apache.pekko" %% "pekko-persistence-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test,
+      // Postgres R2DBC driver — required at runtime. Upstream pekko-persistence-r2dbc 1.1.0
+      // marked it as test-scope (see R2dbcPostgresqlVersion note above).
+      "org.postgresql" % "r2dbc-postgresql" % PekkoProjectSettings.Versions.R2dbcPostgresqlVersion,
     )
 
     val pekkoProjectionLibraries: Seq[ModuleID] = Seq(

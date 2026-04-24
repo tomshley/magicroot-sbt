@@ -6,7 +6,33 @@ This project follows Semantic Versioning.
 
 ---
 
-## [2.0.2] — 2026-04-23
+## [2.0.3] — 2026-04-23
+
+### Fixed
+- **PekkoProjectSettings** — add `org.postgresql:r2dbc-postgresql:1.0.7.RELEASE`
+  to `pekkoPersistenceLibraries`. Upstream `pekko-persistence-r2dbc:1.1.0`
+  demoted the driver from compile scope to `<scope>test</scope>`, so it
+  was no longer pulled transitively. Downstream services using
+  `pekkoPersistenceProject` / `pekkoProjectionProject` would compile
+  cleanly but fail at runtime with
+  `NoClassDefFoundError: io/r2dbc/postgresql/PostgresqlConnectionFactoryProvider`
+  from `pekko.persistence.r2dbc.ConnectionFactoryProvider.createConnectionFactory`.
+  Added `R2dbcPostgresqlVersion` constant so the driver version is pinned in
+  one place and can be overridden per-project when needed.
+
+### Notes
+- No version changes to any Pekko family or other library versus 2.0.2.
+- 2.0.2 tag deleted from Git; 2.0.2 artifact in the GitLab Maven registry
+  remains available but is superseded by 2.0.3.
+
+### Yanked
+- **2.0.2** — missing `r2dbc-postgresql` driver caused runtime failure
+  in downstream services consuming `pekkoPersistenceLibraries`.
+  Do not consume. Superseded by 2.0.3.
+
+---
+
+## [2.0.2] — 2026-04-23 — YANKED (missing r2dbc-postgresql driver)
 
 ### Fixed
 - Republished `2.0.1` content under a new version — the original 2.0.1
