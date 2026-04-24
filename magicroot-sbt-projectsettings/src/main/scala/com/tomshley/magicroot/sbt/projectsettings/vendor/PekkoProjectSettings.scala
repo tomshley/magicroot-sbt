@@ -9,6 +9,12 @@ object PekkoProjectSettings {
     // RecoverWith operator regression (fixed in 1.5.0 per release notes).
     val PekkoVersion = "1.5.0"
     val PekkoManagementVersion = "1.2.1"
+    // pekko-projection-* and pekko-persistence-r2dbc ship on a separate release
+    // cadence from pekko-management; their latest stable is 1.1.0 (Maven Central
+    // only has 1.0.0 / 1.1.0-M1 / 1.1.0 for both families). BC-compatible with
+    // pekko 1.5.x per Pekko's 1.x contract. Previously these references shared
+    // `PekkoManagementVersion`, which broke after bumping management to 1.2.1.
+    val PekkoProjectionVersion = "1.1.0"
     // pekko-connectors-kafka 1.1.0 GA (Sep 2024) replaces the 1.1.0-M1 milestone.
     // M1's Transactional.flow stalled after `Discovered group coordinator` against
     // cp-kafka:7.6 (no AddPartitionsToTxn, no commit). 1.1.0 GA targets pekko 1.1.x
@@ -78,16 +84,16 @@ object PekkoProjectSettings {
     )
 
     val pekkoPersistenceLibraries: Seq[ModuleID] = Seq(
-      "org.apache.pekko" %% "pekko-persistence-r2dbc" % PekkoProjectSettings.Versions.PekkoManagementVersion,
+      "org.apache.pekko" %% "pekko-persistence-r2dbc" % PekkoProjectSettings.Versions.PekkoProjectionVersion,
       "org.apache.pekko" %% "pekko-persistence-typed" % PekkoProjectSettings.Versions.PekkoVersion,
       "org.apache.pekko" %% "pekko-persistence-testkit" % PekkoProjectSettings.Versions.PekkoVersion % Test,
     )
 
     val pekkoProjectionLibraries: Seq[ModuleID] = Seq(
-      "org.apache.pekko" %% "pekko-projection-core" % PekkoProjectSettings.Versions.PekkoManagementVersion,
-      "org.apache.pekko" %% "pekko-projection-r2dbc" % PekkoProjectSettings.Versions.PekkoManagementVersion,
-      "org.apache.pekko" %% "pekko-projection-eventsourced" % PekkoProjectSettings.Versions.PekkoManagementVersion,
-      "org.apache.pekko" %% "pekko-projection-durable-state" % PekkoProjectSettings.Versions.PekkoManagementVersion,
+      "org.apache.pekko" %% "pekko-projection-core" % PekkoProjectSettings.Versions.PekkoProjectionVersion,
+      "org.apache.pekko" %% "pekko-projection-r2dbc" % PekkoProjectSettings.Versions.PekkoProjectionVersion,
+      "org.apache.pekko" %% "pekko-projection-eventsourced" % PekkoProjectSettings.Versions.PekkoProjectionVersion,
+      "org.apache.pekko" %% "pekko-projection-durable-state" % PekkoProjectSettings.Versions.PekkoProjectionVersion,
       "org.apache.pekko" %% "pekko-persistence-query" % PekkoProjectSettings.Versions.PekkoVersion,
     )
 
