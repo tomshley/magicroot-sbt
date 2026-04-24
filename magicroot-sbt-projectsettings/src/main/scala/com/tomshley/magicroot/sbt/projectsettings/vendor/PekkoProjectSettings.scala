@@ -4,30 +4,40 @@ import sbt.*
 
 object PekkoProjectSettings {
   object Versions {
-    val PekkoVersion = "1.1.3"
-    val PekkoManagementVersion = "1.0.0"
-    val PekkoKafkaConnector = "1.1.0-M1"
-    val PekkoHttpVersion = "1.1.0"
-    // Confluent Platform 7.6.0 bundles kafka-clients 3.6.0, which matches the
-    // confluentinc/cp-kafka:7.6.0 broker image used in AMI platform CI. The
-    // prior 6.2.0 pin pulled in kafka-clients 2.8.0, whose transactional
-    // producer protocol handshake hangs indefinitely against a 3.6 broker
-    // (observed in ami-platform-structuring-server TransferEventConsumerKafkaSpec
-    // E2E test: ProducerId set but the `Discovered transaction coordinator`
-    // loop never commits a record). Non-transactional SendProducer paths
-    // worked under 2.8 → 3.6 skew, which is why ami-platform-ingress-server
-    // tests stayed green.
+    // Pekko 1.5.0 is the latest stable (Apr 2026). Binary-compatible with 1.1.x
+    // per Pekko's 1.x semver contract. Bumping skips over the 1.2.0
+    // RecoverWith operator regression (fixed in 1.5.0 per release notes).
+    val PekkoVersion = "1.5.0"
+    val PekkoManagementVersion = "1.2.1"
+    // pekko-connectors-kafka 1.1.0 GA (Sep 2024) replaces the 1.1.0-M1 milestone.
+    // M1's Transactional.flow stalled after `Discovered group coordinator` against
+    // cp-kafka:7.6 (no AddPartitionsToTxn, no commit). 1.1.0 GA targets pekko 1.1.x
+    // (we run 1.5.x — BC-compatible within 1.x) and bundles kafka-clients 3.8.0,
+    // replacing the prior Confluent 7.6-shipped 3.6.0-ccs transitive.
+    val PekkoKafkaConnector = "1.1.0"
+    val PekkoHttpVersion = "1.3.0"
+    // Confluent Platform kept at 7.6.0 — 8.x is based on Apache Kafka 4.0 (KIP-896)
+    // which removes pre-2.1 client protocol support and requires a staged 7.9 → 8.x
+    // production migration with DeprecatedRequestsPerSec scans. Not reactive-hotfix
+    // material.
     val KafkaStreamsVersion = "7.6.0"
     val KafkaAvroVersion = "7.6.0"
-    val Avro4sVersion = "5.0.13"
-    val LogbackVersion = "1.5.13"
+    val Avro4sVersion = "5.0.15"
+    val LogbackVersion = "1.5.32"
     val Json4sVersion = "4.0.7"
+    // Testcontainers kept at 1.20.0 — 2.x moves KafkaContainer to
+    // org.testcontainers.kafka.{ConfluentKafkaContainer|KafkaContainer}, requires
+    // per-module testcontainers- artifacts, drops JUnit 4 (unused by us). Should be
+    // its own migration branch.
     val TestContainers = "1.20.0"
-    val ScalaTest = "3.2.19"
-    val TwilioVersion = "10.6.3"
-    val AwsSdkVersion = "2.25.11"
-    val ScalaPBVersion = "0.11.15"
-    val ProtobufJavaVersion = "3.25.1"
+    val ScalaTest = "3.2.20"
+    val TwilioVersion = "12.0.0"
+    val AwsSdkVersion = "2.42.39"
+    val ScalaPBVersion = "0.11.20"
+    // protobuf-java kept in 3.25.x — 4.x breaks ScalaPB 0.11.x runtime compatibility
+    // (ScalaPB 1.0.0 is alpha). Pekko 1.5 internally ships protobuf-java 4.33.5 but
+    // that copy is shaded; user classpath stays on 3.25.x.
+    val ProtobufJavaVersion = "3.25.5"
   }
 
   object Resolvers {
