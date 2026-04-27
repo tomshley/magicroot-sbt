@@ -6,7 +6,7 @@ This project follows Semantic Versioning.
 
 ---
 
-## [2.0.4] — unreleased
+## [2.0.4] — 2026-04-27
 
 ### Fixed
 - **ProjectSettingDefinitions / AkkaProjectSettings (vendor)** — bump
