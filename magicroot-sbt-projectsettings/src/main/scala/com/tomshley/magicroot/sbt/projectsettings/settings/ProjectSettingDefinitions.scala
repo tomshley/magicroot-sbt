@@ -36,7 +36,7 @@ sealed trait ProjectSettingsVersions {
   lazy val googleGuavaVersion = "23.0"
   lazy val jacksonVersion = "2.15.2"
   lazy val slf4jVersion = "2.0.5"
-  lazy val apacheCommonsIOVersion = "20030203.000550"
+  lazy val apacheCommonsIOVersion = "2.16.1"
   lazy val apacheCommonsDigester = "3.2"
   lazy val scalaTestVersion = "3.2.15"
   lazy val json4sVersion = "4.1.0-M3"

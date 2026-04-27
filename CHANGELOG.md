@@ -6,6 +6,24 @@ This project follows Semantic Versioning.
 
 ---
 
+## [2.0.4] — unreleased
+
+### Fixed
+- **ProjectSettingDefinitions / AkkaProjectSettings (vendor)** — bump
+  `apacheCommonsIOVersion` (and `ApacheCommonsIOVersion` in the vendor
+  copy) from `20030203.000550` (a Feb-2003 1.x build) to `2.16.1`.
+  Maven version comparison treats `20030203.000550` as a huge integer,
+  so the 2003 build silently wins conflict resolution against every
+  modern `2.x.y` artifact, leaking through `javaProject` (composed into
+  the `LibProjectPekko*` plugin family) into every consumer. This forced
+  downstream services consuming testcontainers 1.21.x → commons-compress
+  1.27 (which expects `org.apache.commons.io.Charsets`, added in 2.5)
+  to carry repeated `dependencyOverrides += "commons-io" % "commons-io"`
+  workarounds. With the bump in place, downstream overrides become
+  redundant and can be dropped on the next consumer release.
+
+---
+
 ## [2.0.3] — 2026-04-23
 
 ### Fixed
