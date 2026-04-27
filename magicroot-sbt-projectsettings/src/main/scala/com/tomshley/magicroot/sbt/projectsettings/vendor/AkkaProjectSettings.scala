@@ -31,7 +31,7 @@ object AkkaProjectSettings {
     val GoogleGuavaVersion = "23.0"
     val JacksonVersion = "2.15.2"
     val Slf4jVersion = "2.0.5"
-    val ApacheCommonsIOVersion = "20030203.000550"
+    val ApacheCommonsIOVersion = "2.16.1"
     val ApacheCommonsDigester = "3.2"
     val AkkaKafkaConnector = "1.0.0+66-68d085b8-SNAPSHOT"
     val IoGrpc = "1.59.0"
