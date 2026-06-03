@@ -6,6 +6,48 @@ This project follows Semantic Versioning.
 
 ---
 
+## [2.1.0] — 2026-06-01
+
+### Added
+- **Kafka Streams support (non-Pekko).** New `LibProjectKafkaStreamsPlugin`
+  (standalone; mirrors `LibProjectPekkoFullPlugin`'s self-contained shape) for
+  custom Kafka Streams services. It
+  composes `baseSettings3 ++ javaProject ++ jsonProject ++ libProject ++
+  kafkaStreamsProject` and deliberately omits every Pekko module, so a Streams
+  app does not drag in pekko-actor/cluster/persistence.
+- **`PekkoProjectSettings.Libraries.kafkaStreamsLibraries`** + `kafkaStreamsProject`
+  (`ProjectSettingDefinitions`) — the Apache Kafka Streams engine: `kafka-streams`,
+  `kafka-streams-scala` (`for3Use2_13`), `avro4s-core`, `logback-classic`, plus
+  `kafka-streams-test-utils` + `testcontainers:kafka` (Test). Pinned to the new
+  `KafkaEngineVersion = 3.8.0` constant to match the `kafka-clients` 3.8.0 that
+  `pekko-connectors-kafka` 1.1.0 pulls platform-wide (engine and clients must
+  share one version line); deliberately distinct from the Confluent Platform
+  7.6.0 line used for the Schema Registry Avro serdes.
+- **`kafkaStreamsProject` client/engine alignment override.** `kafkaStreamsProject`
+  adds `dependencyOverrides` forcing `org.apache.kafka:kafka-clients` **and**
+  `kafka-streams` to `KafkaEngineVersion` (3.8.0). The Confluent Platform 7.6.0
+  Avro serdes (pulled transitively via `boilerplate-jvm`'s `pekkoKafkaLibraries`)
+  depend on `kafka-clients:7.6.0-ccs` (Apache Kafka 3.6.x); sbt's default conflict
+  manager would otherwise select that older ABI over 3.8.0 (version string order
+  `7 > 3`), pairing a 3.8.0 Streams engine with a 3.6.x client. That mismatch
+  throws `NoSuchMethodError: org.apache.kafka.common.config.ConfigDef.define(...)`
+  from `StreamsConfig`'s static initializer on the first `KafkaStreams` /
+  `TopologyTestDriver` instantiation. The override keeps engine + clients on one
+  version line for every `LibProjectKafkaStreamsPlugin` consumer, so apps need no
+  per-project pin. Remove once the Confluent serde line is bumped to a Platform
+  release whose `kafka-clients` matches the engine (see TODO in
+  `PekkoProjectSettings`).
+
+### Changed
+- **Testcontainers `1.20.0` → `1.21.4`** (latest stable on the 1.x line) for
+  Docker 29 API compatibility, staying on 1.x to avoid the 2.x `KafkaContainer`
+  package relocation (`org.testcontainers.kafka.*`) and per-module artifact
+  split, which remain a dedicated migration branch. Affects every project that
+  pulls testcontainers in test scope via `basicTestLibraries` /
+  `pekkoKafkaLibraries` / `kafkaStreamsLibraries`.
+
+---
+
 ## [2.0.4] — 2026-04-27
 
 ### Fixed
@@ -154,7 +196,7 @@ Library / SDK refresh:
 - **PekkoProjectSettings**: Bumped `KafkaAvroVersion` and `KafkaStreamsVersion`
   from `6.2.0` to `7.6.0` (Confluent Platform). This aligns the transitive
   `kafka-clients` artifact with the `confluentinc/cp-kafka:7.6.0` broker image
-  used in AMI platform CI (kafka-clients `2.8.0` → `3.6.0`). The prior 2.8-era
+  used in CI (kafka-clients `2.8.0` → `3.6.0`). The prior 2.8-era
   client's transactional producer protocol handshake hung indefinitely against
   a 3.6 broker — `ProducerId set` succeeded but the subsequent `Discovered
   transaction coordinator` retry loop never committed a record. Non-transactional
@@ -178,7 +220,7 @@ Library / SDK refresh:
   `CI_JOB_TOKEN` is present, file-based credentials are skipped. The 1.3.20 change to
   prepend env creds alongside file creds caused Coursier to send the wrong credential
   when resolving cross-project packages, resulting in GitLab returning 404 for published
-  artifacts (e.g. `ami-platform-schemas_3`).
+  artifacts (e.g. a cross-project Scala 3 `_3` artifact).
 
 ---
 
