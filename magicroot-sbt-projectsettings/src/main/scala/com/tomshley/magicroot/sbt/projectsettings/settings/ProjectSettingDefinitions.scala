@@ -122,38 +122,6 @@ protected[projectsettings] object ProjectSettingsDefs extends ProjectSettingsVer
     resolvers ++= PekkoProjectSettings.Resolvers.pekkoResolvers ++ PekkoProjectSettings.Resolvers.pekkoKafkaResolvers,
     libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoKafkaLibraries,
   )
-  lazy val kafkaStreamsProject
-    : Seq[Def.Setting[? >: Seq[Resolver] & Seq[ModuleID] <: Seq[Serializable]]] = Seq(
-    resolvers ++= PekkoProjectSettings.Resolvers.pekkoKafkaResolvers,
-    libraryDependencies ++= PekkoProjectSettings.Libraries.kafkaStreamsLibraries,
-    // Kafka client/engine version alignment for ALL Kafka Streams apps.
-    //
-    // The Confluent Platform 7.6.0 Avro serdes (kafka-avro-serializer,
-    // kafka-streams-avro-serde) — pulled transitively via boilerplate-jvm's
-    // pekkoKafkaLibraries — depend on kafka-clients:7.6.0-ccs (Confluent's
-    // repackaging of Apache Kafka 3.6.x). The Apache Kafka Streams engine here
-    // is KafkaEngineVersion (3.8.0), and kafka-streams:3.8.0 requires the
-    // matching kafka-clients:3.8.0.
-    //
-    // sbt's default conflict manager selects 7.6.0-ccs over 3.8.0 (version
-    // string ordering: 7 > 3), so without these pins kafka-clients is dragged
-    // to the 3.6.x ABI while the Streams engine stays at 3.8.0. That ABI lacks
-    // the 6-arg ConfigDef.define(name,type,default,importance,doc,group)
-    // overload StreamsConfig's static initializer calls in 3.8.0 — the first
-    // TopologyTestDriver/KafkaStreams instantiation then dies with:
-    //   NoSuchMethodError: org.apache.kafka.common.config.ConfigDef.define(...)
-    //
-    // TODO(magicroot/boilerplate): remove these overrides once the Confluent
-    // serde line (KafkaStreamsVersion/KafkaAvroVersion) is bumped to a Platform
-    // release whose kafka-clients matches KafkaEngineVersion (CP 7.8 ships
-    // Apache Kafka 3.8), or once boilerplate-jvm excludes the transitive
-    // kafka-clients from the Confluent serdes. Until then every Kafka Streams
-    // app needs this alignment, so it lives here rather than per-project.
-    dependencyOverrides ++= Seq(
-      "org.apache.kafka" % "kafka-clients" % PekkoProjectSettings.Versions.KafkaEngineVersion,
-      "org.apache.kafka" % "kafka-streams" % PekkoProjectSettings.Versions.KafkaEngineVersion,
-    ),
-  )
   lazy val pekkoMessagingProject: Seq[Def.Setting[Seq[ModuleID]]] = Seq(
     libraryDependencies ++= PekkoProjectSettings.Libraries.pekkoMessagingLibraries
   )
