@@ -301,6 +301,20 @@ Library / SDK refresh:
 ### Changed
 - Added TwilioVersion (10.6.3) and AwsSdkVersion (2.25.11) to PekkoProjectSettings.Versions
 
+## [2.1.0] — 2026-06-03
+
+### Added
+- **Kafka Streams support** — new `LibProjectKafkaStreamsPlugin` and `kafkaStreamsProject` settings for custom Kafka Streams services
+- **Kafka Streams libraries** — `kafkaStreamsLibraries` with Kafka Engine 3.8.0, Confluent Platform 7.6.0 Avro serdes, and RocksDB state store
+- **Testcontainers for Kafka** — Kafka container support for integration testing
+- **Kafka client/engine version alignment** — explicit version constants for Kafka Streams, Kafka Avro serdes, and Confluent Platform to prevent transitive conflicts
+
+### Changed
+- **PekkoProjectSettings** — updated Kafka-related dependency versions for alignment with Confluent Platform 7.6.0
+- **ProjectSettingsPlugins** — added Kafka Streams plugin to the plugin registry
+
+---
+
 ## Unreleased
 
 - Initial OSS standardization (LICENSE, NOTICE, CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CHANGELOG, ROADMAP)
