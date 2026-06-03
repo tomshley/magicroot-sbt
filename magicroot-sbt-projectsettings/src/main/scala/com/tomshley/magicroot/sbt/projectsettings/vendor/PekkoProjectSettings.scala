@@ -26,32 +26,16 @@ object PekkoProjectSettings {
     // which removes pre-2.1 client protocol support and requires a staged 7.9 → 8.x
     // production migration with DeprecatedRequestsPerSec scans. Not reactive-hotfix
     // material.
-    //
-    // TODO(upgrade): CP 7.6.0 ships kafka-clients:7.6.0-ccs (Apache Kafka 3.6.x),
-    // which is OLDER than KafkaEngineVersion (3.8.0). Kafka Streams apps must pin
-    // kafka-clients/kafka-streams back to 3.8.0 to avoid a StreamsConfig
-    // NoSuchMethodError (see kafkaStreamsProject in ProjectSettingDefinitions).
-    // Bumping this serde line to CP 7.8.x (Apache Kafka 3.8) aligns the transitive
-    // kafka-clients with the engine and lets that override be removed. It also
-    // clears the Confluent Cloud "deprecated client / old API version" broker
-    // warnings emitted by the 3.6.x client.
     val KafkaStreamsVersion = "7.6.0"
     val KafkaAvroVersion = "7.6.0"
-    // Apache Kafka Streams engine for custom (non-Pekko) Kafka Streams apps.
-    // Pinned to 3.8.0 to match the kafka-clients 3.8.0 that
-    // pekko-connectors-kafka 1.1.0 pulls platform-wide — the Streams engine and
-    // kafka-clients must share one version line. Distinct from the Confluent
-    // Platform 7.6.0 line above, which only supplies the Schema Registry Avro
-    // serde classes (kafka-streams-avro-serde / kafka-avro-serializer).
-    val KafkaEngineVersion = "3.8.0"
     val Avro4sVersion = "5.0.15"
     val LogbackVersion = "1.5.32"
     val Json4sVersion = "4.0.7"
-    // Testcontainers pinned at 1.21.4 (latest stable on 1.x line) for Docker 29
-    // API compatibility while avoiding the 2.x package relocation/migration.
-    // 2.x moves KafkaContainer to org.testcontainers.kafka.* and should remain
-    // a dedicated migration branch.
-    val TestContainers = "1.21.4"
+    // Testcontainers kept at 1.20.0 — 2.x moves KafkaContainer to
+    // org.testcontainers.kafka.{ConfluentKafkaContainer|KafkaContainer}, requires
+    // per-module testcontainers- artifacts, drops JUnit 4 (unused by us). Should be
+    // its own migration branch.
+    val TestContainers = "1.20.0"
     val ScalaTest = "3.2.20"
     val TwilioVersion = "12.0.0"
     val AwsSdkVersion = "2.42.39"
@@ -128,22 +112,6 @@ object PekkoProjectSettings {
       "io.confluent" % "kafka-avro-serializer" % PekkoProjectSettings.Versions.KafkaAvroVersion,
       "org.apache.pekko" %% "pekko-connectors-kafka" % PekkoProjectSettings.Versions.PekkoKafkaConnector,
       "org.apache.pekko" %% "pekko-connectors-kafka-cluster-sharding" % PekkoProjectSettings.Versions.PekkoKafkaConnector,
-      "org.testcontainers" % "kafka" % PekkoProjectSettings.Versions.TestContainers % Test,
-    )
-
-    // Apache Kafka Streams engine (NON-Pekko). Used by LibProjectKafkaStreamsPlugin
-    // for custom Kafka Streams apps. The
-    // Confluent Schema Registry serde classes are NOT pulled here — consumers get
-    // io.confluent:kafka-avro-serializer transitively via boilerplate-jvm and wrap
-    // it with SchemaRegistrySerde; pulling the Confluent kafka-streams line here
-    // would fight kafka-clients 3.8.0 in conflict resolution.
-    val kafkaStreamsLibraries: Seq[ModuleID] = Seq(
-      "org.apache.kafka" % "kafka-streams" % PekkoProjectSettings.Versions.KafkaEngineVersion,
-      ("org.apache.kafka" %% "kafka-streams-scala" % PekkoProjectSettings.Versions.KafkaEngineVersion)
-        .cross(CrossVersion.for3Use2_13),
-      "com.sksamuel.avro4s" %% "avro4s-core" % PekkoProjectSettings.Versions.Avro4sVersion,
-      "ch.qos.logback" % "logback-classic" % PekkoProjectSettings.Versions.LogbackVersion,
-      "org.apache.kafka" % "kafka-streams-test-utils" % PekkoProjectSettings.Versions.KafkaEngineVersion % Test,
       "org.testcontainers" % "kafka" % PekkoProjectSettings.Versions.TestContainers % Test,
     )
 
