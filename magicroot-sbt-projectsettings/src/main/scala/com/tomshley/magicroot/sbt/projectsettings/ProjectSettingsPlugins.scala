@@ -209,6 +209,32 @@ object LibProjectPekkoFullPlugin extends AutoPlugin {
       ProjectSettingsDefs.pekkoKafkaProject
 }
 
+/** LibProjectKafkaStreamsPlugin — standalone **non-Pekko** library/app plugin
+  * for custom Kafka Streams services.
+  * Mirrors LibProjectPekkoFullPlugin's self-contained shape (does not require
+  * BaseProjectSettingsPlugin, so it works in sub-project layouts) but
+  * deliberately omits every Pekko module: a Kafka Streams app owns its own
+  * runtime and must not drag in pekko-actor/cluster/persistence.
+  * Bundles: baseSettings3, javaProject, jsonProject, libProject, kafkaStreamsProject.
+  */
+object LibProjectKafkaStreamsPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+
+  override val requires: Plugins = plugins.JvmPlugin
+
+  object autoImport extends CommonProjectKeys
+
+  import autoImport.*
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      baseSettings3 ++
+      ProjectSettingsDefs.javaProject ++
+      ProjectSettingsDefs.jsonProject ++
+      ProjectSettingsDefs.libProject ++
+      ProjectSettingsDefs.kafkaStreamsProject
+}
+
 object LibManagedProjectPlugin extends AutoPlugin {
   override def projectSettings: Seq[Def.Setting[?]] =
     super.projectSettings
@@ -348,7 +374,7 @@ object BasicLoggingPlugin extends AutoPlugin {
 }
 
 // =============================================================================
-// Edge Ingest Plugins - for TCP/gRPC ingestion services (AMI-like)
+// Edge Ingest Plugins - for TCP/gRPC ingestion services
 // =============================================================================
 
 /** EdgeIngestProjectPlugin - TCP + gRPC + EventSourced + Kafka (no Twirl) */
