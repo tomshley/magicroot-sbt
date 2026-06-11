@@ -182,6 +182,23 @@ object LibProjectProtobufPlugin extends AutoPlugin {
       ProjectSettingsDefs.protobufProject
 }
 
+/** LibProjectCryptoPlugin — opt-in BouncyCastle lightweight-API dependency
+  * group (`cryptoLibraries`). Standalone (requires only JvmPlugin, like
+  * LibProjectPekkoFullPlugin) so it composes with any project layout and
+  * adds NOTHING beyond the crypto jars — no base settings, no Pekko stack.
+  * Deliberately not bundled into the full-stack plugins: services that
+  * never touch crypto shouldn't carry the provider jar.
+  */
+object LibProjectCryptoPlugin extends AutoPlugin {
+  override val trigger: PluginTrigger = noTrigger
+
+  override val requires: Plugins = plugins.JvmPlugin
+
+  override def projectSettings: Seq[Def.Setting[?]] =
+    super.projectSettings ++
+      ProjectSettingsDefs.cryptoProject
+}
+
 /** LibProjectPekkoFullPlugin — standalone Pekko library plugin that does not
   * require BaseProjectSettingsPlugin, so it works in sub-project layouts.
   * Bundles: baseSettings3, javaProject, jsonProject, libProject,
