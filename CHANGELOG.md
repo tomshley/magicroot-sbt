@@ -6,6 +6,15 @@ This project follows Semantic Versioning.
 
 ---
 
+## [2.2.0] — 2026-06-11
+
+### Added
+- **LibProjectCryptoPlugin** — standalone opt-in plugin for BouncyCastle lightweight API dependencies.
+- **PekkoProjectSettings.Libraries.cryptoLibraries** — adds `org.bouncycastle:bcprov-jdk18on` for projects that need lightweight cryptographic primitives without changing full-stack plugin composition.
+- **ProjectSettingsDefs.cryptoProject** — reusable dependency settings for the crypto dependency group.
+
+---
+
 ## [2.0.4] — 2026-04-27
 
 ### Fixed
