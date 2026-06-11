@@ -66,6 +66,13 @@ object PekkoProjectSettings {
     // or `pekkoProjectionLibraries` still has a working Postgres driver at runtime.
     // 1.0.7.RELEASE is the version that pekko-persistence-r2dbc 1.1.0's POM references.
     val R2dbcPostgresqlVersion = "1.0.7.RELEASE"
+    // BouncyCastle lightweight crypto API (bcprov). Needed where the JDK's
+    // java.security.MessageDigest falls short — e.g. exportable/restorable
+    // digest midstate (SHA256Digest.getEncodedState / state constructor) for
+    // checkpointable incremental hashing. Lightweight API only: consumers
+    // must NOT register it as a JCE provider (no Security.addProvider), so
+    // there are no provider-ordering or FIPS-policy interactions.
+    val BouncyCastleVersion = "1.80"
   }
 
   object Resolvers {
@@ -160,6 +167,14 @@ object PekkoProjectSettings {
     val protobufLibraries: Seq[ModuleID] = Seq(
       "com.thesamet.scalapb" %% "scalapb-runtime" % PekkoProjectSettings.Versions.ScalaPBVersion,
       "com.google.protobuf" % "protobuf-java" % PekkoProjectSettings.Versions.ProtobufJavaVersion
+    )
+
+    // BouncyCastle lightweight API (see Versions.BouncyCastleVersion note).
+    // Opt-in via LibProjectCryptoPlugin — deliberately NOT bundled into the
+    // full-stack plugins so services that never touch crypto don't carry
+    // an ~8 MB provider jar.
+    val cryptoLibraries: Seq[ModuleID] = Seq(
+      "org.bouncycastle" % "bcprov-jdk18on" % PekkoProjectSettings.Versions.BouncyCastleVersion
     )
   }
 }
